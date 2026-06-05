@@ -308,7 +308,7 @@ def make_cross_source_winners_table(table_dir: Path) -> str:
     body = tabular(["Source", "Stress", "Pool", "Best MSE", "Best P95", "Best decision", "Flip"], rows, align="llllllc")
     return table_env(
         "tab:cross-source-winners",
-        "Cross-source scenario winners in the single-run all-model pool. The table tests whether best-MSE, lowest-P95 learned, and best decision-cost models agree under the same source and stress setting. The pool excludes LastValue, Chronos-Bolt, and LTSF-bridge references; multi-seed stability is reported separately in Table XII.",
+        "Cross-source scenario winners in the single-run all-model pool. The table tests whether best-MSE, lowest-P95 learned, and best decision-cost models agree under the same source and stress setting. LastValue, Chronos-Bolt, and LTSF-bridge are excluded from winner selection; multi-seed stability is reported in Table XII.",
         body,
         size=r"\tiny",
         resize=True,
