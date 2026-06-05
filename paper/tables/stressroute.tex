@@ -1,0 +1,30 @@
+\begin{table}[t]
+\centering
+\tiny
+\caption{StressRoute v1 deployment policy under latency budgets.}
+\label{tab:stressroute}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lllrrrr}
+\toprule
+Source & Stress & Budget & Selected & Cost & Cost vs DLinear & P95 ms \\
+\midrule
+Alibaba & clean & 0.2 & DLinear & 0.6292 & 0 & 0.1422 \\
+Alibaba & clean & 1 & PatchTST-lite & 0.4529 & -0.2802 & 0.9882 \\
+Alibaba & delayed\_12 & 0.2 & DLinear & 1.2701 & 0 & 0.1422 \\
+Alibaba & delayed\_12 & 1 & PatchTST-lite & 0.6864 & -0.4596 & 0.9882 \\
+Alibaba & missing\_30 & 0.2 & DLinear & 0.5092 & -0.005 & 0.1422 \\
+Alibaba & missing\_30 & 1 & PatchTST-lite & 0.4305 & -0.1588 & 0.9882 \\
+Alibaba & missing\_variables\_30 & 0.2 & DLinear & 1.1787 & 0.0036 & 0.1422 \\
+Alibaba & missing\_variables\_30 & 1 & PatchTST-lite & 1.087 & -0.0745 & 0.9882 \\
+Salesforce/Borg & clean & 0.2 & DLinear & 0.2512 & 0 & 0.1502 \\
+Salesforce/Borg & clean & 1 & PatchTST-lite & 0.1996 & -0.2056 & 0.66 \\
+Salesforce/Borg & delayed\_12 & 0.2 & DLinear & 0.5353 & 0 & 0.1502 \\
+Salesforce/Borg & delayed\_12 & 1 & PatchTST-lite & 0.4412 & -0.1758 & 0.66 \\
+Salesforce/Borg & missing\_30 & 0.2 & DLinear & 0.201 & 4.64e-04 & 0.1502 \\
+Salesforce/Borg & missing\_30 & 1 & PatchTST-lite & 0.1708 & -0.1496 & 0.66 \\
+Salesforce/Borg & missing\_variables\_30 & 0.2 & DLinear & 0.529 & 0.0012 & 0.1502 \\
+Salesforce/Borg & missing\_variables\_30 & 1 & PatchTST-lite & 0.5001 & -0.0535 & 0.66 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

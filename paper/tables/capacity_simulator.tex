@@ -1,0 +1,22 @@
+\begin{table}[t]
+\centering
+\tiny
+\caption{Forecast-to-capacity decision proxy on multivariate telemetry sources.}
+\label{tab:capacity-simulator}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{llrrrrr}
+\toprule
+Source & Model & Cost & Under & Over & Peak miss & P95 ms \\
+\midrule
+Alibaba & Reactive HPA & 0.3423 & 0.0317 & 0.1838 & 0.0091 & controller ref. \\
+Alibaba & PatchTST-lite & 0.4136 & 0.0426 & 0.2005 & 0.7179 & 0.6995 \\
+Alibaba & DLinear & 0.4175 & 0.0384 & 0.2257 & 0.6951 & 0.1673 \\
+Alibaba & RACE-DLinear & 0.4225 & 0.0426 & 0.2094 & 0.7254 & 0.3935 \\
+Salesforce/Borg & Reactive HPA & 0.1591 & 0.0059 & 0.1298 & 0.0026 & controller ref. \\
+Salesforce/Borg & PatchTST-lite & 0.2449 & 0.0111 & 0.1894 & 0.2 & 0.6435 \\
+Salesforce/Borg & RACE-DLinear & 0.2808 & 0.0303 & 0.1293 & 0.4851 & 0.3731 \\
+Salesforce/Borg & DLinear & 0.2813 & 0.0188 & 0.1876 & 0.3366 & 0.1497 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

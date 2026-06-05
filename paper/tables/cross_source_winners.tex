@@ -1,0 +1,22 @@
+\begin{table}[t]
+\centering
+\tiny
+\caption{Cross-source scenario winners in the single-run all-model pool. The table tests whether best-MSE, lowest-P95 learned, and best decision-cost models agree under the same source and stress setting. The pool excludes LastValue, Chronos-Bolt, and LTSF-bridge references; multi-seed stability is reported separately in Table XII.}
+\label{tab:cross-source-winners}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{llllllc}
+\toprule
+Source & Stress & Pool & Best MSE & Best P95 & Best decision & Flip \\
+\midrule
+Alibaba & Clean & all learned & RACE-DLinear & DLinear & Native iTransformer & Y \\
+Alibaba & Delayed tail & all learned & RACE-DLinear & DLinear & Official PatchTST & Y \\
+Alibaba & Missing points & all learned & DLinear & DLinear & Official PatchTST & Y \\
+Alibaba & Metric outage & all learned & PatchTST-lite & DLinear & PatchTST-lite & Y \\
+Salesforce/Borg & Clean & all learned & Official TimeMixer & Official PatchTST & Official TimeMixer & Y \\
+Salesforce/Borg & Delayed tail & all learned & Official TimeMixer & Native iTransformer & Official PatchTST & Y \\
+Salesforce/Borg & Missing points & all learned & Official TimeMixer & Native iTransformer & Official PatchTST & Y \\
+Salesforce/Borg & Metric outage & all learned & Native iTransformer & Native iTransformer & Native iTransformer & N \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

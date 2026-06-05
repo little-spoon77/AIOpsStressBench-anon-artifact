@@ -1,0 +1,28 @@
+# Paper Table Notes
+
+- `table_clean_accuracy` reports clean forecasting quality and deployment cost averaged by data source.
+- `table_stress_robustness` excludes clean data and summarizes robustness across missing, delayed, burst, and shift scenarios.
+- `table_deployment_cost` summarizes P50/P95 latency, parameters, memory, and official-baseline runtime when available.
+- `table_capacity_risk_proxy` reports operational under/over-provision proxy only for Alibaba 2018 and NetMan, where it is more defensible than on GAIA.
+- `table_capacity_simulator` reports forecast-to-capacity policy outcomes, including reactive baselines, under/over area, peak miss, and total normalized cost.
+- `table_capacity_horizon_sensitivity` and `table_capacity_headroom_sensitivity` report deployment sensitivity of proactive forecast-capacity policies.
+- `table_severity_auc` and `table_severity_slope` summarize robustness degradation curves across stress intensities.
+- `table_multiseed_stability` reports seed-level stability for Alibaba and Salesforce/Borg core scenarios.
+- `table_multiseed_compact` is the main-text five-seed winner summary over 10 source-stress settings.
+- `table_capacity_cost_ratio_sensitivity` recomputes capacity winners under 2:1, 5:1, and 10:1 under/over cost ratios without retraining models.
+- `table_stress_realism_audit` audits natural non-finite, zero-run, flatline, spike, and level-shift signals in public telemetry.
+- `table_imputation_pipeline` reports a compact DLinear/PatchTST-lite imputation check under the native stress protocol.
+- `table_stressroute_v1` reports the interpretable stress-aware deployment policy under latency budgets.
+- `table_stressroute_v2` compares fixed models, StressRoute v1, StressRoute v2, and oracle selection when the v2 CSVs are available.
+- `table_stressroute_policy_summary` compresses the mixed-stress routing results for main-paper discussion.
+- `table_benchmark_card` and `table_baseline_fairness` are reviewer-facing cards for protocol and baseline comparability.
+- `table_structural_findings` extracts quantitative findings from `table_severity_auc`, `table_severity_slope`, and winner tables; do not hand-edit these claims.
+- `table_scenario_winners` is the main tradeoff table over the core learned comparable pool; LastValue, Chronos-Bolt, and LTSF-bridge references are excluded.
+- `table_scenario_winners_all_available` is retained as an artifact-only reference that includes all available rows.
+- `table_deployment_guidelines` translates the benchmark evidence into deployment-model selection guidance.
+- `table_gaia_category_analysis` checks whether conclusions hold across GAIA periodic, changepoint, low-SNR, and partially-stationary subsets.
+- Alibaba 2018 machine usage is the main multivariate CloudOps source for CPU/memory/network/disk stress evaluation.
+- `official_patchtst` uses the official PatchTST model class inside the native stress pipeline; `patchtst` is the lightweight PatchTST-lite baseline.
+- `official_itransformer_native` uses the official iTransformer model class inside the native stress pipeline; the older `official_itransformer` rows come from the LTSF CSV bridge.
+- `official_timemixer` uses THUML Time-Series-Library TimeMixer inside the native stress pipeline.
+- `table_race_ablation` should be used to discuss RACE-DLinear as a lightweight robust baseline, not as a universal leading model.

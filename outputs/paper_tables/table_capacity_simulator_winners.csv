@@ -1,0 +1,9 @@
+source,stress,best_total_cost_model,total_normalized_cost_best,best_under_area_model,under_provision_area_best,best_peak_miss_model,peak_miss_rate_best,best_latency_model,latency_p95_ms_best
+alibaba2018,burst,dlinear,0.3897532932460308,dlinear,0.0358964465558528,dlinear,0.7131822459222082,last_value,0.0768375510233454
+alibaba2018,delayed_12,dlinear,0.4137803427875042,dlinear,0.037857037037611,patchtst,0.6809127979924717,last_value,0.1037864538375288
+alibaba2018,level_shift,dlinear,0.3818934448063373,last_value,0.0202546678483486,last_value,0.5010586574654956,last_value,0.0776435219449922
+alibaba2018,missing_30,dlinear,0.3977708481252193,dlinear,0.0360310934484005,dlinear,0.7164660445420327,last_value,0.0768510188208893
+alibaba2018,missing_variables_30,patchtst,0.4509141147136688,dlinear,0.0483075864613056,dlinear,0.6506528387703889,last_value,0.0794090505223721
+salesforce_borg,delayed_12,race_dlinear,0.1853030528873205,patchtst,0.0086801890283823,patchtst,0.1624878875968992,last_value,0.0709899934008717
+salesforce_borg,missing_30,race_dlinear,0.1970902541652321,patchtst,0.0102834226563572,patchtst,0.2971576227390181,last_value,0.0827060503070242
+salesforce_borg,missing_variables_30,patchtst,0.3072289070114493,patchtst,0.0143480924889445,patchtst,0.1403120962532299,last_value,0.0728269893443211

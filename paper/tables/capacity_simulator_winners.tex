@@ -1,0 +1,20 @@
+\begin{table}[t]
+\centering
+\tiny
+\caption{Forecast-to-capacity proxy winners by deployment objective.}
+\label{tab:capacity-simulator-winners}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lllll}
+\toprule
+Source & Stress & Best cost & Best under & Best peak \\
+\midrule
+Alibaba & delayed\_12 & DLinear & DLinear & PatchTST-lite \\
+Alibaba & missing\_30 & DLinear & DLinear & DLinear \\
+Alibaba & missing\_variables\_30 & PatchTST-lite & DLinear & DLinear \\
+Salesforce/Borg & delayed\_12 & RACE-DLinear & PatchTST-lite & PatchTST-lite \\
+Salesforce/Borg & missing\_30 & RACE-DLinear & PatchTST-lite & PatchTST-lite \\
+Salesforce/Borg & missing\_variables\_30 & PatchTST-lite & PatchTST-lite & PatchTST-lite \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

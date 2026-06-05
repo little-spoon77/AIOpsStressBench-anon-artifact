@@ -1,0 +1,5 @@
+case,selected_model,capacity_cost,under_rate,p95_latency_ms
+Telemetry outage,PatchTST-lite,4.0193190574646,1.0,0.6907368508109357
+Delayed telemetry,PatchTST-lite,3.5506763458251958,1.0,0.7246603563544339
+Point missingness,PatchTST-lite,0.4052967727184295,1.0,0.6698755052639171
+Metric outage,PatchTST-lite,0.5243200063705444,1.0,0.6526903431222308

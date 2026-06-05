@@ -1,0 +1,8 @@
+{
+  "case_id": "netman_missing_30",
+  "title": "NetMan KPI: 30% missing points",
+  "selected_window": 21458,
+  "risk": "Point-wise missing telemetry creates an accuracy/latency tradeoff: stronger sequence models can be more accurate but costlier.",
+  "deployment_implication": "The lowest-error model may be inappropriate for a low-latency monitoring path if its P95 latency is much higher.",
+  "official_itransformer_note": "Official iTransformer is reported in summary tables. It is not overlaid here because the LTSF bridge flattens entity-metric channels and is not a per-entity target protocol."
+}

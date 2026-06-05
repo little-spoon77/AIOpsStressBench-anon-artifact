@@ -1,0 +1,24 @@
+\begin{table}[t]
+\centering
+\tiny
+\caption{Compact imputation check. Simple fill helps point missingness but does not repair whole metric-channel outage.}
+\label{tab:imputation-pipeline}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{llllrrr}
+\toprule
+Source & Stress & Model & Preprocess & MSE & Cap. cost & P95 ms \\
+\midrule
+Alibaba & missing\_30 & DLinear & None & 0.2866 & 0.5081 & 0.6287 \\
+Alibaba & missing\_30 & DLinear & Forward fill & 0.274 & 0.4154 & 0.5726 \\
+Alibaba & missing\_30 & DLinear & Mean fill & 0.2744 & 0.4141 & 0.2349 \\
+Alibaba & missing\_variables\_30 & DLinear & None & 0.4617 & 0.8886 & 0.2441 \\
+Alibaba & missing\_variables\_30 & DLinear & Forward fill & 0.4617 & 0.8886 & 0.6966 \\
+Alibaba & missing\_variables\_30 & DLinear & Mean fill & 0.4617 & 0.8886 & 0.7001 \\
+Salesforce/Borg & missing\_30 & PatchTST-lite & None & 0.0345 & 0.1756 & 1.1839 \\
+Salesforce/Borg & missing\_30 & PatchTST-lite & Mean fill & 0.0282 & 0.1666 & 1.1873 \\
+Salesforce/Borg & missing\_variables\_30 & PatchTST-lite & None & 0.0901 & 0.2788 & 0.8685 \\
+Salesforce/Borg & missing\_variables\_30 & PatchTST-lite & Forward fill & 0.0901 & 0.2788 & 0.9912 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

@@ -1,0 +1,22 @@
+[
+  {
+    "status": "skipped",
+    "reason": "insufficient_train_normal_holdout_or_fault_length",
+    "experiment_id": "checkoutservice_cpu",
+    "rep": 2,
+    "normal_end": 72,
+    "n_steps": 93,
+    "train_end": 36,
+    "normal_eval_start": 42
+  },
+  {
+    "status": "skipped",
+    "reason": "insufficient_train_normal_holdout_or_fault_length",
+    "experiment_id": "checkoutservice_mem",
+    "rep": 2,
+    "normal_end": 72,
+    "n_steps": 101,
+    "train_end": 36,
+    "normal_eval_start": 42
+  }
+]

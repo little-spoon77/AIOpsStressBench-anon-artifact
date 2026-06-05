@@ -1,0 +1,20 @@
+\begin{table}[t]
+\centering
+\tiny
+\caption{Deployment-stress taxonomy and operational motivation.}
+\label{tab:stress-taxonomy}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{p{0.16\linewidth}p{0.28\linewidth}p{0.29\linewidth}p{0.18\linewidth}}
+\toprule
+Stress & Protocol & Operational source & Evaluation \\
+\midrule
+Missing points & Random input values unavailable & Packet loss, scraper gaps & Robustness curve \\
+Metric outage & Entire input metric channel masked & Exporter failure, telemetry outage & Outage stress \\
+Delayed tail & Most recent k input steps hidden & Ingestion lag, delayed monitoring & Delay stress \\
+Noise & Gaussian perturbation on input & Aggregation or sensor instability & Noise stress \\
+Burst & Sparse positive spikes in input & Workload spike, flash crowd & Burst stress \\
+Level shift & Context level changes before horizon & Release, migration, mitigation & Shift stress \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

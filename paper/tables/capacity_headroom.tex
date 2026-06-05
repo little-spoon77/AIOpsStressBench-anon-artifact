@@ -1,0 +1,50 @@
+\begin{table}[t]
+\centering
+\tiny
+\caption{Forecast-to-capacity headroom sensitivity on Alibaba.}
+\label{tab:capacity-headroom}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{llrrrrr}
+\toprule
+Stress & Model & Headroom & Cost & Under & Over & Peak \\
+\midrule
+clean & DLinear & 0.05 & 0.4449 & 0.06 & 0.1446 & 0.8474 \\
+clean & RACE-DLinear & 0.05 & 0.4563 & 0.0641 & 0.1357 & 0.8552 \\
+clean & PatchTST-lite & 0.05 & 0.4746 & 0.0685 & 0.1321 & 0.8563 \\
+clean & DLinear & 0.15 & 0.3998 & 0.0353 & 0.2231 & 0.7193 \\
+clean & RACE-DLinear & 0.15 & 0.4019 & 0.0381 & 0.2115 & 0.7364 \\
+clean & PatchTST-lite & 0.15 & 0.4101 & 0.0409 & 0.2056 & 0.7272 \\
+clean & PatchTST-lite & 0.3 & 0.4328 & 0.0194 & 0.3359 & 0.476 \\
+clean & RACE-DLinear & 0.3 & 0.4348 & 0.0181 & 0.3444 & 0.5031 \\
+clean & DLinear & 0.3 & 0.4419 & 0.0166 & 0.3591 & 0.4827 \\
+delayed\_12 & DLinear & 0.05 & 0.481 & 0.0646 & 0.158 & 0.8373 \\
+delayed\_12 & RACE-DLinear & 0.05 & 0.4948 & 0.0698 & 0.146 & 0.8454 \\
+delayed\_12 & PatchTST-lite & 0.05 & 0.4958 & 0.0692 & 0.1498 & 0.8338 \\
+delayed\_12 & DLinear & 0.15 & 0.431 & 0.0389 & 0.2364 & 0.7307 \\
+delayed\_12 & RACE-DLinear & 0.15 & 0.4341 & 0.0426 & 0.2212 & 0.748 \\
+delayed\_12 & PatchTST-lite & 0.15 & 0.4356 & 0.042 & 0.2255 & 0.7116 \\
+delayed\_12 & RACE-DLinear & 0.3 & 0.4568 & 0.0208 & 0.3529 & 0.531 \\
+delayed\_12 & PatchTST-lite & 0.3 & 0.459 & 0.0202 & 0.3579 & 0.4741 \\
+delayed\_12 & DLinear & 0.3 & 0.4654 & 0.0186 & 0.3722 & 0.5062 \\
+missing\_30 & DLinear & 0.05 & 0.4639 & 0.0627 & 0.1501 & 0.8508 \\
+missing\_30 & RACE-DLinear & 0.05 & 0.4763 & 0.0672 & 0.1401 & 0.8603 \\
+missing\_30 & PatchTST-lite & 0.05 & 0.4769 & 0.0683 & 0.1356 & 0.8623 \\
+missing\_30 & PatchTST-lite & 0.15 & 0.413 & 0.0407 & 0.2095 & 0.7424 \\
+missing\_30 & DLinear & 0.15 & 0.4145 & 0.0373 & 0.2281 & 0.7354 \\
+missing\_30 & RACE-DLinear & 0.15 & 0.4171 & 0.0404 & 0.2153 & 0.7543 \\
+missing\_30 & PatchTST-lite & 0.3 & 0.4363 & 0.0192 & 0.3403 & 0.4943 \\
+missing\_30 & RACE-DLinear & 0.3 & 0.4437 & 0.0193 & 0.3473 & 0.5316 \\
+missing\_30 & DLinear & 0.3 & 0.4514 & 0.0176 & 0.3636 & 0.5068 \\
+missing\_variables\_30 & PatchTST-lite & 0.05 & 0.544 & 0.0814 & 0.1371 & 0.8607 \\
+missing\_variables\_30 & DLinear & 0.05 & 0.5751 & 0.0769 & 0.1906 & 0.7943 \\
+missing\_variables\_30 & RACE-DLinear & 0.05 & 0.6218 & 0.093 & 0.1568 & 0.8328 \\
+missing\_variables\_30 & PatchTST-lite & 0.15 & 0.4677 & 0.0519 & 0.2081 & 0.7485 \\
+missing\_variables\_30 & DLinear & 0.15 & 0.5148 & 0.0492 & 0.2688 & 0.684 \\
+missing\_variables\_30 & RACE-DLinear & 0.15 & 0.5334 & 0.0614 & 0.2264 & 0.742 \\
+missing\_variables\_30 & PatchTST-lite & 0.3 & 0.4688 & 0.027 & 0.3338 & 0.5328 \\
+missing\_variables\_30 & RACE-DLinear & 0.3 & 0.5118 & 0.0325 & 0.3493 & 0.5546 \\
+missing\_variables\_30 & DLinear & 0.3 & 0.5272 & 0.0248 & 0.4033 & 0.4852 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

@@ -1,0 +1,8 @@
+{
+  "case_id": "salesforce_borg_delayed_12",
+  "title": "Salesforce/Borg: delayed telemetry",
+  "selected_window": 63305,
+  "risk": "Recent workload telemetry can arrive late, forcing the forecaster to predict from a stale context window.",
+  "deployment_implication": "A clean benchmark cannot tell whether a model remains useful when the newest monitoring samples are unavailable.",
+  "official_itransformer_note": "Official iTransformer is reported in summary tables. It is not overlaid here because the LTSF bridge flattens entity-metric channels and is not a per-entity target protocol."
+}

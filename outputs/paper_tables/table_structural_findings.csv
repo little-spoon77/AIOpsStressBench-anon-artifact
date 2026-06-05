@@ -1,0 +1,5 @@
+finding,evidence,deployment_implication
+Metric-outage robustness is model-family specific,Salesforce/Borg missing-variable slope: DLinear 16.78 vs PatchTST-lite 8.40; Alibaba: 2.30 vs 1.12.,"Patch context helps when entire metric channels disappear, but it should be weighed against latency."
+Patch robustness is not universal,"Noise slopes are close: Salesforce/Borg 0.78-0.99, Alibaba 0.05-0.07 for DLinear/RACE/PatchTST-lite.",A model that helps telemetry outage may not add much under point-wise sensor noise.
+"Clean, latency, and capacity objectives disagree","On Alibaba core learned scenarios, best MSE differs from best learned P95 in 4/5 cases and from best capacity proxy in 4/5 cases.",A clean leaderboard cannot decide between online alerting and proactive capacity planning.
+Robustness has measurable deployment cost,"On Salesforce/Borg metric outage, PatchTST-lite has about 3.6x DLinear P95 latency while roughly halving the degradation slope.","The benchmark should report Pareto choices, not only a single accuracy winner."

@@ -1,0 +1,10 @@
+| source | stress | best_total_cost_model | total_normalized_cost_best | best_under_area_model | under_provision_area_best | best_peak_miss_model | peak_miss_rate_best | best_latency_model | latency_p95_ms_best |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| alibaba2018 | burst | dlinear | 0.3898 | dlinear | 0.0359 | dlinear | 0.7132 | last_value | 0.07684 |
+| alibaba2018 | delayed_12 | dlinear | 0.4138 | dlinear | 0.03786 | patchtst | 0.6809 | last_value | 0.1038 |
+| alibaba2018 | level_shift | dlinear | 0.3819 | last_value | 0.02025 | last_value | 0.5011 | last_value | 0.07764 |
+| alibaba2018 | missing_30 | dlinear | 0.3978 | dlinear | 0.03603 | dlinear | 0.7165 | last_value | 0.07685 |
+| alibaba2018 | missing_variables_30 | patchtst | 0.4509 | dlinear | 0.04831 | dlinear | 0.6507 | last_value | 0.07941 |
+| salesforce_borg | delayed_12 | race_dlinear | 0.1853 | patchtst | 0.00868 | patchtst | 0.1625 | last_value | 0.07099 |
+| salesforce_borg | missing_30 | race_dlinear | 0.1971 | patchtst | 0.01028 | patchtst | 0.2972 | last_value | 0.08271 |
+| salesforce_borg | missing_variables_30 | patchtst | 0.3072 | patchtst | 0.01435 | patchtst | 0.1403 | last_value | 0.07283 |

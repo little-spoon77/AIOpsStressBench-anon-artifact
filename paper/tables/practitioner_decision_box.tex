@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\caption{Deployment-oriented decision rules suggested by the benchmark evidence.}
+\label{tab:deployment-decision}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{p{0.32\linewidth} p{0.57\linewidth}}
+\toprule
+Deployment path & Conservative rule \\
+\midrule
+Strict online alerting & Prefer DLinear unless outage risk dominates. \\
+Telemetry outage & Consider PatchTST-lite when latency budget allows. \\
+Capacity planning & Choose by under/over cost, headroom, and stress family. \\
+Incident response & Stress-test degraded telemetry before trusting clean rank. \\
+\bottomrule
+\end{tabular}
+\end{table}

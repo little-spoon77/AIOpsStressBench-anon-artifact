@@ -1,0 +1,19 @@
+\begin{table}[t]
+\centering
+\scriptsize
+\caption{Alibaba scenario winners within the core learned comparable pool: DLinear, RACE-DLinear, PatchTST-lite, official PatchTST, native iTransformer, and TimeMixer.}
+\label{tab:scenario-winners}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{llll}
+\toprule
+Stress & Best MSE & Best learned P95 & Best Capacity \\
+\midrule
+clean & RACE-DLinear & DLinear & Native iTransformer \\
+delayed\_12 & RACE-DLinear & DLinear & Official PatchTST \\
+level\_shift & RACE-DLinear & DLinear & Native iTransformer \\
+missing\_30 & DLinear & DLinear & Official PatchTST \\
+missing\_variables\_30 & PatchTST-lite & DLinear & PatchTST-lite \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

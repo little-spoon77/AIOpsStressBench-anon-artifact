@@ -1,0 +1,8 @@
+{
+  "case_id": "netman_missing_variables_30",
+  "title": "NetMan KPI: telemetry outage",
+  "selected_window": 20660,
+  "risk": "Metric-level telemetry outage can hide correlated operational signals and sharply changes the robustness/latency tradeoff.",
+  "deployment_implication": "A clean benchmark would not reveal whether the selected model tolerates missing monitoring channels during incident response.",
+  "official_itransformer_note": "Official iTransformer is reported in summary tables. It is not overlaid here because the LTSF bridge flattens entity-metric channels and is not a per-entity target protocol."
+}

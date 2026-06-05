@@ -1,0 +1,22 @@
+\begin{table}[t]
+\centering
+\scriptsize
+\caption{Alibaba deployment cost across clean and stress runs.}
+\label{tab:deployment-cost}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lrrrr}
+\toprule
+Model & Clean P95 & Mean P95 & Params & Mem MB \\
+\midrule
+LastValue & 0.0734 & 0.0736 & 0 & 0.125 \\
+DLinear & 0.1369 & 0.143 & 2334.0 & 17.00 \\
+RACE-DLinear & 0.355 & 0.3855 & 4668.0 & 17.00 \\
+PatchTST-lite & 0.6482 & 0.6629 & 1.24e+05 & 37.00 \\
+Native iTransformer & 1.9605 & 1.9193 & 2.81e+05 & 30.00 \\
+Official PatchTST & 2.1504 & 1.9656 & 3.06e+05 & 155.0 \\
+Official TimeMixer & 4.9689 & 4.7154 & 1.29e+05 & 179 \\
+Chronos-Bolt ref. & 10.95 & 11.46 & pretrained & 26.00 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

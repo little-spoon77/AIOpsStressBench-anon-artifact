@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\scriptsize
+\caption{StressRoute deployment-policy summary. Source-specific route counts, regret, and oracle-gap details are reported in the reproducibility package.}
+\label{tab:stressroute-policy}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{llll}
+\toprule
+Budget & Feasible learned models & Typical route & Deployment interpretation \\
+\midrule
+0.2 ms & DLinear only & DLinear & Strict online alerting; latency dominates capacity objective. \\
+0.5 ms & DLinear / RACE-DLinear & DLinear or RACE-DLinear & Middle budget; keep lightweight models unless stress cost is high. \\
+1.0 ms & DLinear / RACE-DLinear / PatchTST-lite & PatchTST-lite often feasible & Relaxed budget; patch-based route can be justified under outage or delayed telemetry. \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

@@ -1,0 +1,26 @@
+\begin{table}[t]
+\centering
+\tiny
+\caption{Capacity-risk proxy on Alibaba and NetMan stress scenarios.}
+\label{tab:capacity-risk}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{llrrrr}
+\toprule
+Source & Model & Under & Over & Cost & P95 ms \\
+\midrule
+Alibaba & Chronos-Bolt ref. & 0.3685 & 0.6315 & 0.4513 & 11.71 \\
+Alibaba & PatchTST-lite & 0.209 & 0.765 & 0.4598 & 0.665 \\
+Alibaba & Official PatchTST & 0.2013 & 0.7822 & 0.5111 & 1.9425 \\
+Alibaba & RACE-DLinear & 0.1991 & 0.7782 & 0.5269 & 0.3899 \\
+Alibaba & DLinear & 0.1859 & 0.7864 & 0.5333 & 0.1439 \\
+Alibaba & Native iTransformer & 0.2101 & 0.772 & 0.5627 & 1.911 \\
+Alibaba & Official TimeMixer & 0.2064 & 0.7797 & 0.5654 & 4.6647 \\
+Alibaba & LastValue & 0.2771 & 0.6987 & 1.3175 & 0.0737 \\
+NetMan & DLinear & 0.1966 & 0.7294 & 14.65 & 0.3891 \\
+NetMan & RACE-DLinear & 0.1889 & 0.7438 & 15.47 & 0.7099 \\
+NetMan & PatchTST-lite & 0.2397 & 0.683 & 15.99 & 1.1478 \\
+NetMan & LastValue & 0.1202 & 0.8138 & 83.95 & 0.2571 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

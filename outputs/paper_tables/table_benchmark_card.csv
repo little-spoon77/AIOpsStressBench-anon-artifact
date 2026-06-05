@@ -1,0 +1,8 @@
+component,setting,details
+Task,Operational forecasting under deployment stress,"Input length 96, horizon 24, chronological 65/15/20 split."
+Public sources,"GAIA, NetMan, Alibaba 2018, Salesforce/Borg 2011",Alibaba and Salesforce/Borg are multivariate telemetry; GAIA/NetMan provide KPI stress diversity.
+Stress operators,"Missing points, metric outage, delayed tail, noise, burst, level shift",Stress is injected only into the input window; targets remain clean.
+Metrics,MSE/MAE plus deployment metrics,"P95 latency, parameters, memory, severity slope, and forecast-to-capacity proxy."
+Core comparable pool,"LastValue, DLinear, RACE-DLinear, PatchTST-lite, official PatchTST, native iTransformer, TimeMixer","Native or native-wrapper stress protocol where available; RACE-DLinear is a lightweight robust baseline, not a claimed leading model."
+Reference-only pool,"Chronos-Bolt zero-shot, LTSF-bridge iTransformer",Feasibility and context only; these rows do not drive the central model-ranking claims.
+Reproducibility,Minimal and extended reproduction paths,"Minimal path regenerates the core winner and latency tables; extended path regenerates severity, sensitivity, and multi-seed results."

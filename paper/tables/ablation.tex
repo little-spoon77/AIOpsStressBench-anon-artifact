@@ -1,0 +1,19 @@
+\begin{table}[t]
+\centering
+\scriptsize
+\caption{RACE-DLinear ablation on GAIA missing-30.}
+\label{tab:ablation}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{llrrrr}
+\toprule
+Run & Model & MSE & MAE & P95 ms & Cap. cost \\
+\midrule
+base & DLinear & 0.0053 & 0.0108 & 0.2008 & 3.03e+10 \\
+base & race\_dlinear\_nomask & 0.0056 & 0.0109 & 0.1977 & 2.68e+10 \\
+base & RACE-DLinear & 0.0056 & 0.0101 & 0.2896 & 2.90e+10 \\
+no calibration & RACE-DLinear & 0.0053 & 0.0111 & 0.3162 & 3.21e+10 \\
+no train stress & RACE-DLinear & 0.1156 & 0.0598 & 0.3132 & 2.96e+11 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

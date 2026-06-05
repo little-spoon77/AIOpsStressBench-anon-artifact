@@ -1,0 +1,16 @@
+\begin{table}[t]
+\centering
+\caption{Deployment consequences in selected case-study windows. Cost is local capacity proxy except for the Alibaba metric-outage row, where global capacity proxy identifies the deployment-preferred model.}
+\label{tab:case-consequence}
+\scriptsize
+\begin{tabular}{l l r r r}
+\toprule
+Case & Selected & Cost & Under & P95 ms \\
+\midrule
+Telemetry outage & PatchTST-lite & 4.019 & 1.0 & 0.691 \\
+Delayed telemetry & PatchTST-lite & 3.551 & 1.0 & 0.725 \\
+Point missingness & PatchTST-lite & 0.405 & 1.0 & 0.670 \\
+Metric outage & PatchTST-lite & 0.524 & 1.0 & 0.653 \\
+\bottomrule
+\end{tabular}
+\end{table}

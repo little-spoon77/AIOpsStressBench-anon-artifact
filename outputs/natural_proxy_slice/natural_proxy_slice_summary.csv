@@ -1,0 +1,3 @@
+dataset,proxy_slices,normal_to_slice_mse_flips,normal_to_slice_capacity_flips,mse_ranking_changes,capacity_ranking_changes,mse_capacity_flips,any_ranking_change
+alibaba2018,4,2,1,1,1,3,True
+salesforce_borg,4,0,1,0,0,0,True

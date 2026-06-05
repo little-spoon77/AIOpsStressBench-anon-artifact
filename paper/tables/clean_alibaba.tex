@@ -1,0 +1,22 @@
+\begin{table}[t]
+\centering
+\scriptsize
+\caption{Clean Alibaba forecasting accuracy and deployment cost.}
+\label{tab:clean-alibaba}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lrrrrr}
+\toprule
+Model & MSE & MAE & P95 ms & Params & Mem MB \\
+\midrule
+RACE-DLinear & 0.2671 & 0.3783 & 0.355 & 4668.0 & 17.00 \\
+DLinear & 0.2697 & 0.3837 & 0.1369 & 2334.0 & 17.00 \\
+Native iTransformer & 0.2744 & 0.3744 & 1.9605 & 2.81e+05 & 30.00 \\
+Official PatchTST & 0.2748 & 0.3764 & 2.1504 & 3.06e+05 & 155.0 \\
+PatchTST-lite & 0.2753 & 0.3845 & 0.6482 & 1.24e+05 & 37.00 \\
+Official TimeMixer & 0.277 & 0.3799 & 4.9689 & 1.29e+05 & 178 \\
+Chronos-Bolt ref. & 0.3922 & 0.4705 & 10.95 & pretrained & 26.00 \\
+LastValue & 0.4082 & 0.4475 & 0.0734 & 0 & 0 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

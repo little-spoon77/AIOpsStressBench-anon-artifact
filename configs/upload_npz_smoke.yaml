@@ -1,0 +1,37 @@
+seed: 42
+output_dir: outputs/upload_npz_smoke
+
+data:
+  source: npz
+  npz_path: data/upload_smoke.npz
+  input_len: 48
+  pred_len: 12
+  train_ratio: 0.6
+  val_ratio: 0.2
+  target_metric: 0
+
+stress:
+  scenario: missing_points
+  missing_rate: 0.2
+  noise_std: 0.0
+  delay_steps: 0
+  burst_rate: 0.0
+  level_shift: 0.0
+
+train:
+  models: [last_value, dlinear, race_dlinear, patchtst]
+  epochs: 3
+  batch_size: 32
+  lr: 0.001
+  weight_decay: 0.0001
+  patience: 1
+  num_workers: 0
+  device: auto
+  latency_warmup: 4
+  latency_iters: 10
+
+capacity:
+  headroom: 0.15
+  under_cost: 5.0
+  over_cost: 1.0
+  demand_floor: 0.05

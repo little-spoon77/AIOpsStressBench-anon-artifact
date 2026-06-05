@@ -1,0 +1,10 @@
+dataset,stress,best_mse_model,best_capacity_model,lowest_latency_model,models,min_seeds,objective_disagreement
+alibaba2018,clean,race_dlinear,race_dlinear,dlinear,3,3,True
+alibaba2018,delayed_12,race_dlinear,race_dlinear,dlinear,3,3,True
+alibaba2018,level_shift,race_dlinear,race_dlinear,dlinear,3,3,True
+alibaba2018,missing_30,race_dlinear,patchtst,dlinear,3,3,True
+alibaba2018,missing_variables_30,patchtst,patchtst,dlinear,3,3,True
+salesforce_borg_256x2048,clean,dlinear,race_dlinear,dlinear,3,3,True
+salesforce_borg_256x2048,delayed_12,dlinear,race_dlinear,dlinear,3,3,True
+salesforce_borg_256x2048,missing_30,patchtst,patchtst,dlinear,3,3,True
+salesforce_borg_256x2048,missing_variables_30,patchtst,patchtst,dlinear,3,3,True

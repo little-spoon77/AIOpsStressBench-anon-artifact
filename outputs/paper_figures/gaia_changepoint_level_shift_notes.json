@@ -1,0 +1,8 @@
+{
+  "case_id": "gaia_changepoint_level_shift",
+  "title": "GAIA changepoint: level shift",
+  "selected_window": 5460,
+  "risk": "A release, migration, or workload regime change can shift the recent context before the forecasting horizon.",
+  "deployment_implication": "Offline clean MSE does not tell operators which model is stable under deployment-induced concept shift.",
+  "official_itransformer_note": "Official iTransformer is reported in summary tables. It is not overlaid here because the LTSF bridge flattens entity-metric channels and is not a per-entity target protocol."
+}

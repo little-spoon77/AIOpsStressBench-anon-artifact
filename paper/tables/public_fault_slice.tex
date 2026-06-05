@@ -1,0 +1,19 @@
+\begin{table}[t]
+\centering
+\caption{Bounded public fault-injection slice sanity check on RE2-OB Online Boutique. The target is Istio P99 latency, so the asymmetric proxy is reported as decision cost. Models are trained per case on train-normal windows; held-out pre-injection and post-injection fault windows are used only for evaluation. This short-window probe is sanity evidence, not incident validation.}
+\label{tab:public-fault-slice}
+\tiny
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{lrrrrr}
+\toprule
+Fault type & Cases & MSE chg. & MSE $\ne$ cost & Med. MSE ratio & Med. cost ratio \\
+\midrule
+CPU stress & 14 & 1 & 0 & 1.57 & 1.21 \\
+Network delay & 15 & 2 & 3 & 15.00 & 1.43 \\
+Packet loss & 15 & 4 & 5 & 1540.54 & 1.86 \\
+Memory stress & 14 & 2 & 3 & 105.03 & 2.04 \\
+\midrule
+All & 58 & 9 & 11 & 53.34 & 1.49 \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,7 @@
+deployment_constraint,recommended_model,fallback_or_reference,evidence,rationale
+Strict online latency,DLinear,LastValue as a zero-parameter lower bound,Cost; winners,"Among learned forecasters, DLinear has the lowest P95 latency and parameter count, so it is the safest default for online alerting paths."
+Telemetry outage / missing variables,PatchTST-lite,DLinear when latency is the hard constraint,Stress; stability; cases,"Patch-based context modeling is more robust on Alibaba missing-variable stress, but it costs higher latency than DLinear."
+Low under-provision tolerance,DLinear with higher headroom,PatchTST-lite for missing-variable windows,Capacity winners; headroom,"Capacity objectives often select DLinear for total cost and under-provision area, while missing-variable windows can favor PatchTST-lite."
+Offline capacity planning,DLinear,PatchTST-lite if telemetry quality is poor,Proxy; horizon,"Forecast-to-capacity proxy favors low-cost DLinear in many stress settings, but the best policy changes under outage and delayed telemetry."
+Long horizon or delayed telemetry,Re-evaluate by horizon,DLinear for total cost; PatchTST-lite for selected peak-miss cases,Horizon; capacity winners,"Longer horizons increase peak-miss and total cost, so the selected model should be chosen by deployment objective rather than clean MSE."
+Memory-constrained edge path,DLinear,RACE-DLinear only as a robust lightweight baseline,Cost; ablation,Linear baselines keep parameters and memory low; RACE-DLinear should not be claimed as a universal leading model.

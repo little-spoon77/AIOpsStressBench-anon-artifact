@@ -1,0 +1,18 @@
+\begin{table}[t]
+\centering
+\tiny
+\caption{Stress realism audit over public operational telemetry. Flatline and tail proxies do not claim true ingestion delay.}
+\label{tab:stress-realism}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lrrrrrr}
+\toprule
+Source & Nonfinite & Zero & Zero-run12 & Flatline12 & Spike z6 & P95 shift \\
+\midrule
+GAIA & 0 & 0.027 & 0.0709 & 0.4173 & 0.0365 & 1.8759 \\
+NetMan & 0 & 0.0669 & 0.069 & 0.1379 & 6.99e-04 & 1.0004 \\
+Alibaba & 0 & 0.0297 & 0.0328 & 0.625 & 0.0062 & 1.7032 \\
+Salesforce/Borg & 0 & 0.1876 & 0.1886 & 0.654 & 0.0231 & 1.3717 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

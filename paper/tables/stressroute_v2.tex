@@ -1,0 +1,44 @@
+\begin{table}[t]
+\centering
+\tiny
+\caption{StressRoute v2 policy comparison averaged over mixed deployment stresses.}
+\label{tab:stressroute-v2}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lllllrrrrrr}
+\toprule
+Source & Budget & Policy & Selected & Feas. & Cost & vs DLinear & P95 & Lat. vs PatchTST & Regret & Oracle gap \\
+\midrule
+Alibaba & 0.2 & Fixed DLinear & DLinear & Y & 0.8446 & 0 & 0.142 & -0.7724 & 0 & 0 \\
+Alibaba & 0.2 & Fixed PatchTST-lite & PatchTST-lite & N & 0.6238 & -0.2494 & 0.6239 & 0 & -0.2207 & -0.2494 \\
+Alibaba & 0.2 & StressRoute v1 & DLinear & Y & 0.8446 & 0 & 0.142 & -0.7724 & 0 & 0 \\
+Alibaba & 0.2 & StressRoute v2 & DLinear & Y & 0.8446 & 0 & 0.142 & -0.7724 & 0 & 0 \\
+Alibaba & 0.2 & Oracle & Oracle & Y & 0.8446 & 0 & 0.142 & -0.7724 & 0 & 0 \\
+Alibaba & 0.5 & Fixed DLinear & DLinear & Y & 0.8446 & 0 & 0.142 & -0.7724 & 0.1502 & 0.25 \\
+Alibaba & 0.5 & Fixed PatchTST-lite & PatchTST-lite & N & 0.6238 & -0.2494 & 0.6239 & 0 & -0.0705 & -0.0401 \\
+Alibaba & 0.5 & StressRoute v1 & RACE-DLinear+ & Y & 0.8472 & 0.0022 & 0.2707 & -0.5662 & 0.1529 & 0.2542 \\
+Alibaba & 0.5 & StressRoute v2 & DLinear+ & Y & 0.8324 & -0.0194 & 0.3564 & -0.4287 & 0.138 & 0.2236 \\
+Alibaba & 0.5 & Oracle & Oracle & Y & 0.6944 & -0.1793 & 0.3564 & -0.4287 & 0 & 0 \\
+Alibaba & 1 & Fixed DLinear & DLinear & Y & 0.8446 & 0 & 0.142 & -0.7724 & 0.3827 & 0.7744 \\
+Alibaba & 1 & Fixed PatchTST-lite & PatchTST-lite & Y & 0.6238 & -0.2494 & 0.6239 & 0 & 0.1619 & 0.3357 \\
+Alibaba & 1 & StressRoute v1 & PatchTST-lite & Y & 0.6238 & -0.2494 & 0.6239 & 0 & 0.1619 & 0.3357 \\
+Alibaba & 1 & StressRoute v2 & DLinear+ & Y & 0.6862 & -0.1552 & 0.6239 & 0 & 0.2243 & 0.4894 \\
+Alibaba & 1 & Oracle & Oracle & Y & 0.4619 & -0.4179 & 0.6239 & 0 & 0 & 0 \\
+Salesforce/Borg & 0.2 & Fixed DLinear & DLinear & Y & 0.3916 & 0 & 0.1446 & -0.7743 & 0 & 0 \\
+Salesforce/Borg & 0.2 & Fixed PatchTST-lite & PatchTST-lite & N & 0.3398 & -0.1284 & 0.6408 & 0 & -0.0518 & -0.1284 \\
+Salesforce/Borg & 0.2 & StressRoute v1 & DLinear & Y & 0.3916 & 0 & 0.1446 & -0.7743 & 0 & 0 \\
+Salesforce/Borg & 0.2 & StressRoute v2 & DLinear & Y & 0.3916 & 0 & 0.1446 & -0.7743 & 0 & 0 \\
+Salesforce/Borg & 0.2 & Oracle & Oracle & Y & 0.3916 & 0 & 0.1446 & -0.7743 & 0 & 0 \\
+Salesforce/Borg & 0.5 & Fixed DLinear & DLinear & Y & 0.3916 & 0 & 0.1446 & -0.7743 & 0.125 & 0.4611 \\
+Salesforce/Borg & 0.5 & Fixed PatchTST-lite & PatchTST-lite & N & 0.3398 & -0.1284 & 0.6408 & 0 & 0.0732 & 0.2678 \\
+Salesforce/Borg & 0.5 & StressRoute v1 & RACE-DLinear+ & Y & 0.3662 & -0.0714 & 0.3484 & -0.4563 & 0.0996 & 0.3391 \\
+Salesforce/Borg & 0.5 & StressRoute v2 & RACE-DLinear+ & Y & 0.3655 & -0.0713 & 0.3993 & -0.3768 & 0.0989 & 0.3407 \\
+Salesforce/Borg & 0.5 & Oracle & Oracle & Y & 0.2666 & -0.2932 & 0.3993 & -0.3768 & 0 & 0 \\
+Salesforce/Borg & 1 & Fixed DLinear & DLinear & Y & 0.3916 & 0 & 0.1446 & -0.7743 & 0.1768 & 0.8254 \\
+Salesforce/Borg & 1 & Fixed PatchTST-lite & PatchTST-lite & Y & 0.3398 & -0.1284 & 0.6408 & 0 & 0.1251 & 0.5963 \\
+Salesforce/Borg & 1 & StressRoute v1 & PatchTST-lite+ & Y & 0.333 & -0.1423 & 0.4933 & -0.2302 & 0.1182 & 0.5676 \\
+Salesforce/Borg & 1 & StressRoute v2 & PatchTST-lite+ & Y & 0.3397 & -0.1405 & 0.6408 & 0 & 0.1249 & 0.5786 \\
+Salesforce/Borg & 1 & Oracle & Oracle & Y & 0.2147 & -0.4264 & 0.6408 & 0 & 0 & 0 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

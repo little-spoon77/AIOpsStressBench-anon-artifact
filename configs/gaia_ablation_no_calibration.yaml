@@ -1,0 +1,40 @@
+seed: 42
+output_dir: outputs/gaia_ablation_no_calibration
+
+data:
+  source: npz
+  npz_path: data/gaia_metric_forecast.npz
+  input_len: 96
+  pred_len: 24
+  train_ratio: 0.65
+  val_ratio: 0.15
+  target_metric: 0
+
+stress:
+  scenario: missing_points
+  missing_rate: 0.3
+  noise_std: 0.0
+  delay_steps: 0
+  burst_rate: 0.0
+  level_shift: 0.0
+
+train:
+  models: [race_dlinear]
+  epochs: 8
+  batch_size: 128
+  lr: 0.001
+  weight_decay: 0.0001
+  patience: 3
+  num_workers: 0
+  device: auto
+  latency_warmup: 8
+  latency_iters: 40
+  train_stress: true
+  calibrate: false
+
+capacity:
+  headroom: 0.15
+  under_cost: 5.0
+  over_cost: 1.0
+  demand_floor: 0.05
+

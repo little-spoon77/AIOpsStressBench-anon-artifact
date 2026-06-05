@@ -1,0 +1,14 @@
+| source | model | policy | mean_total_cost | worst_total_cost | mean_under_area | mean_over_area | mean_peak_miss | mean_p95_under | latency_p95_ms | params |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| alibaba2018 | reactive_hpa | reactive_baseline | 0.3423 | 0.3587 | 0.0317 | 0.1838 | 0.009063 | 0.1926 | 0 | 0 |
+| alibaba2018 | patchtst | forecast_capacity | 0.4136 | 0.4509 | 0.04262 | 0.2005 | 0.7179 | 0.2249 | 0.6995 | 1.242e+05 |
+| alibaba2018 | dlinear | forecast_capacity | 0.4175 | 0.5042 | 0.03837 | 0.2257 | 0.6951 | 0.1949 | 0.1673 | 2334 |
+| alibaba2018 | race_dlinear | forecast_capacity | 0.4225 | 0.5203 | 0.04261 | 0.2094 | 0.7254 | 0.2085 | 0.3935 | 4668 |
+| alibaba2018 | last_value | forecast_capacity | 0.6374 | 0.9436 | 0.07272 | 0.2739 | 0.6988 | 0.2777 | 0.08291 | 0 |
+| alibaba2018 | last_observed | reactive_baseline | 0.6383 | 0.9436 | 0.07287 | 0.2739 | 0.6985 | 0.2787 | 0 | 0 |
+| salesforce_borg | reactive_hpa | reactive_baseline | 0.1591 | 0.1803 | 0.005852 | 0.1298 | 0.002614 | 0 | 0 | 0 |
+| salesforce_borg | patchtst | forecast_capacity | 0.2449 | 0.3072 | 0.0111 | 0.1894 | 0.2 | 0.04485 | 0.6435 | 1.262e+05 |
+| salesforce_borg | race_dlinear | forecast_capacity | 0.2808 | 0.4601 | 0.03031 | 0.1293 | 0.4851 | 0.1362 | 0.3731 | 4672 |
+| salesforce_borg | dlinear | forecast_capacity | 0.2813 | 0.4452 | 0.01875 | 0.1876 | 0.3366 | 0.07392 | 0.1497 | 2336 |
+| salesforce_borg | last_observed | reactive_baseline | 0.7364 | 1.231 | 0.0883 | 0.2949 | 0.4966 | 0.2928 | 0 | 0 |
+| salesforce_borg | last_value | forecast_capacity | 0.7365 | 1.231 | 0.0883 | 0.295 | 0.496 | 0.2931 | 0.07551 | 0 |

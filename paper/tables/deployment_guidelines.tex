@@ -1,0 +1,20 @@
+\begin{table}[t]
+\centering
+\tiny
+\caption{Deployment model-selection guidelines from AIOpsStressBench evidence.}
+\label{tab:deployment-guidelines}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{p{0.23\linewidth}p{0.17\linewidth}p{0.25\linewidth}p{0.23\linewidth}}
+\toprule
+Constraint & Primary & Fallback & Evidence \\
+\midrule
+Strict online latency & DLinear & LastValue as a zero-parameter lower bound & Cost; winners \\
+Telemetry outage / missing variables & PatchTST-lite & DLinear when latency is the hard constraint & Stress; stability; cases \\
+Low under-provision tolerance & DLinear with higher headroom & PatchTST-lite for missing-variable windows & Capacity winners; headroom \\
+Offline capacity planning & DLinear & PatchTST-lite if telemetry quality is poor & Proxy; horizon \\
+Long horizon or delayed telemetry & Re-evaluate by horizon & DLinear for total cost; PatchTST-lite for selected peak-miss cases & Horizon; capacity winners \\
+Memory-constrained edge path & DLinear & RACE-DLinear only as a robust lightweight baseline & Cost; ablation \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

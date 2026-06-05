@@ -1,0 +1,8 @@
+{
+  "case_id": "alibaba2018_missing_variables_30",
+  "title": "Alibaba 2018: missing resource metrics",
+  "selected_window": 764,
+  "risk": "Machine-level CPU, memory, network, and disk metrics may become partially unavailable during telemetry outages.",
+  "deployment_implication": "Resource forecasting should be evaluated under missing-variable stress, not only under clean machine-utilization traces.",
+  "official_itransformer_note": "Official iTransformer is reported in summary tables. It is not overlaid here because the LTSF bridge flattens entity-metric channels and is not a per-entity target protocol."
+}

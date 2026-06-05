@@ -1,0 +1,53 @@
+[
+  {
+    "model": "dlinear",
+    "params": 2336,
+    "calibration_abs_bias": 0.0,
+    "calibration_enabled": 0.0,
+    "mse": 0.0359422005712986,
+    "mae": 0.10704658925533295,
+    "latency_p50_ms": 0.12994901044294238,
+    "latency_p95_ms": 0.13602852122858164,
+    "latency_mean_ms": 0.1308266568230465,
+    "capacity_under_rate": 0.15669538315568476,
+    "capacity_over_rate": 0.8433029345661068,
+    "capacity_mean_under": 0.021758949384093285,
+    "capacity_mean_over": 0.25902700424194336,
+    "capacity_cost": 0.1710154265165329,
+    "max_memory_mb": 17
+  },
+  {
+    "model": "race_dlinear",
+    "params": 4672,
+    "calibration_abs_bias": 0.04280276596546173,
+    "calibration_enabled": 1.0,
+    "mse": 0.037421755492687225,
+    "mae": 0.10283825546503067,
+    "latency_p50_ms": 0.3316180082038045,
+    "latency_p95_ms": 0.3424755297601223,
+    "latency_mean_ms": 0.33295633329544216,
+    "capacity_under_rate": 0.3178769817237295,
+    "capacity_over_rate": 0.682117550872093,
+    "capacity_mean_under": 0.029816530644893646,
+    "capacity_mean_over": 0.2056644707918167,
+    "capacity_cost": 0.15747736394405365,
+    "max_memory_mb": 18
+  },
+  {
+    "model": "patchtst",
+    "params": 126232,
+    "calibration_abs_bias": 0.0,
+    "calibration_enabled": 0.0,
+    "mse": 0.03918406367301941,
+    "mae": 0.11183066666126251,
+    "latency_p50_ms": 0.6079870508983731,
+    "latency_p95_ms": 0.6176130205858499,
+    "latency_mean_ms": 0.6091269518947229,
+    "capacity_under_rate": 0.29640185925387597,
+    "capacity_over_rate": 0.7035926733419466,
+    "capacity_mean_under": 0.026577569544315338,
+    "capacity_mean_over": 0.2738049328327179,
+    "capacity_cost": 0.19266897439956665,
+    "max_memory_mb": 37
+  }
+]

@@ -1,0 +1,39 @@
+seed: 42
+output_dir: outputs/salesforce_borg_64x1200_example
+
+data:
+  source: npz
+  npz_path: data/salesforce_borg_64x1200.npz
+  input_len: 96
+  pred_len: 24
+  train_ratio: 0.65
+  val_ratio: 0.15
+  target_metric: 0
+
+stress:
+  scenario: clean
+  missing_rate: 0.0
+  noise_std: 0.0
+  delay_steps: 0
+  burst_rate: 0.0
+  level_shift: 0.0
+
+train:
+  models: [last_value, dlinear, race_dlinear, patchtst]
+  epochs: 6
+  batch_size: 128
+  lr: 0.001
+  weight_decay: 0.0001
+  patience: 2
+  num_workers: 0
+  device: cuda
+  latency_warmup: 8
+  latency_iters: 40
+  train_stress: true
+  calibrate: true
+
+capacity:
+  headroom: 0.15
+  under_cost: 5.0
+  over_cost: 1.0
+  demand_floor: 1.0

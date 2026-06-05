@@ -1,0 +1,24 @@
+\begin{table}[t]
+\centering
+\tiny
+\caption{Five-seed winner stability over all 10 core source-stress settings in the lightweight pool. Rows compare the best-MSE, best decision-cost, and lowest-P95 learned models; p-values are paired tests over decision cost for MSE-vs-decision flips.}
+\label{tab:multiseed-compact}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{llrllllc}
+\toprule
+Source & Stress & Seeds & Best MSE & Best decision & Low P95 & MSE != decision & p-value \\
+\midrule
+Alibaba & Clean & 5 & RACE-DLinear & RACE-DLinear & DLinear & N & -- \\
+Alibaba & Delayed tail & 5 & RACE-DLinear & RACE-DLinear & DLinear & N & -- \\
+Alibaba & Level shift & 5 & RACE-DLinear & RACE-DLinear & DLinear & N & -- \\
+Alibaba & Missing points & 5 & RACE-DLinear & PatchTST-lite & DLinear & Y & 0.0011 \\
+Alibaba & Metric outage & 5 & PatchTST-lite & PatchTST-lite & DLinear & N & -- \\
+Salesforce/Borg & Clean & 5 & DLinear & RACE-DLinear & DLinear & Y & 0.0007 \\
+Salesforce/Borg & Delayed tail & 5 & DLinear & RACE-DLinear & DLinear & Y & 0.0037 \\
+Salesforce/Borg & Level shift & 5 & DLinear & RACE-DLinear & DLinear & Y & 0.0064 \\
+Salesforce/Borg & Missing points & 5 & PatchTST-lite & PatchTST-lite & DLinear & N & -- \\
+Salesforce/Borg & Metric outage & 5 & PatchTST-lite & PatchTST-lite & DLinear & N & -- \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

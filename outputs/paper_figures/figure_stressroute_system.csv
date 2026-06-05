@@ -1,0 +1,12 @@
+id,label,detail,x,y,w,h
+telemetry,Telemetry window,CPU / memory / network / KPI,0.05,0.58,0.18,0.18
+features,Stress feature extractor,"missing, outage, delay,
+volatility, trend",0.28,0.58,0.21,0.18
+controls,Deployment controls,"latency budget
+objective",0.28,0.22,0.21,0.16
+router,StressRoute policy,"v1 rules + v2 learned router
++ oracle upper bound",0.55,0.48,0.22,0.22
+forecaster,Selected forecaster,"DLinear / RACE-DLinear /
+PatchTST-style",0.82,0.58,0.17,0.18
+decision,Deployment evaluation,"forecast quality, latency,
+capacity risk",0.82,0.22,0.17,0.17

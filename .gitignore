@@ -1,0 +1,14 @@
+﻿.venv/
+.git/
+__pycache__/
+*.pyc
+*.pkl
+*.zip
+*.pt
+*.pth
+*.ckpt
+data/raw/
+_artifact_dryrun_*/
+main_polished.pdf
+main_faultprobe.pdf
+texput.log

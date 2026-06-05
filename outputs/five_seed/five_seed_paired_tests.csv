@@ -1,0 +1,11 @@
+dataset,stress,best_mse_model,best_capacity_model,mse_vs_capacity_flip,capacity_gap,capacity_gap_outside_1std,paired_t_p,wilcoxon_p,n,capacity_cost_best_mse_mean,capacity_cost_best_capacity_mean,paired_diff_mean,paired_diff_std
+alibaba2018,clean,race_dlinear,race_dlinear,False,0.0059632122516632,False,,,5,,,,
+alibaba2018,delayed_12,race_dlinear,race_dlinear,False,0.0111434280872345,False,,,5,,,,
+alibaba2018,level_shift,race_dlinear,race_dlinear,False,0.0068093657493591,False,,,5,,,,
+alibaba2018,missing_30,race_dlinear,patchtst,True,0.0792786300182342,True,0.0010934845077090814,0.0625,5,0.5169947445392609,0.4377161145210266,0.07927863001823426,0.021075093978974658
+alibaba2018,missing_variables_30,patchtst,patchtst,False,0.3447191894054413,True,,,5,,,,
+salesforce_borg,clean,dlinear,race_dlinear,True,0.0101290673017501,True,0.000714507617165259,0.0625,5,0.14968320131301877,0.13955413401126862,0.010129067301750139,0.0024101367535289656
+salesforce_borg,delayed_12,dlinear,race_dlinear,True,0.0184904485940933,True,0.00372834879564512,0.0625,5,0.17570162415504456,0.15721117556095118,0.018490448594093344,0.006815282679262204
+salesforce_borg,level_shift,dlinear,race_dlinear,True,0.0080322355031967,True,0.006425685222432689,0.0625,5,0.14785782396793365,0.1398255884647369,0.008032235503196723,0.0034404651488120492
+salesforce_borg,missing_30,patchtst,patchtst,False,0.0021411389112472,False,,,5,,,,
+salesforce_borg,missing_variables_30,patchtst,patchtst,False,0.1311325550079346,True,,,5,,,,

@@ -1,0 +1,201 @@
+﻿name: AIOpsStressBench
+version: submission-2026-06-01
+task: deployment-stress time-series forecasting for CloudOps and AIOps telemetry
+paper_title: "AIOpsStressBench: Deployment-Stress Benchmarking for Operational Time-Series Forecasting"
+
+datasets:
+  - name: GAIA
+    file: data/gaia_metric_forecast.npz
+    shape: [127, 4092, 1]
+    role: KPI stress diversity and behavior-category analysis
+    caveat: mostly single-target KPI series; do not use for strong capacity-planning claims
+  - name: NetMan
+    file: data/netman_kpi.npz
+    shape: [29, 4096, 1]
+    role: operational KPI telemetry and missing-telemetry case studies
+    caveat: KPI semantics are not equivalent to resource capacity metrics
+  - name: Alibaba2018
+    file: data/alibaba2018_machine_usage.npz
+    shape: [128, 4096, 5]
+    role: main multivariate resource-telemetry source
+    metrics: [cpu_utilization, memory_utilization, network_in, network_out, disk_io]
+    caveat: machine-level telemetry, not service-level request or SLO data
+  - name: SalesforceBorg
+    file: data/salesforce_borg_256x2048.npz
+    shape: [256, 2048, 7]
+    role: second multivariate operational telemetry source
+    caveat: one dynamic metric is all zero in the current subset; do not interpret it as active business telemetry
+
+forecast_task:
+  input_len: 96
+  pred_len: 24
+  horizon_sensitivity: [12, 24, 48, 96]
+  split: chronological
+  train_ratio: 0.65
+  val_ratio: 0.15
+  test_ratio: 0.20
+  seed: 42
+  target_metric: 0
+  stress_target_policy: stress is applied only to the input window; targets remain clean
+
+stress_protocol:
+  clean: no injected corruption
+  missing_10: random point missingness with rate 0.10
+  missing_30: random point missingness with rate 0.30
+  missing_50: random point missingness with rate 0.50
+  missing_70: random point missingness with rate 0.70
+  missing_variables_10: full metric-channel missingness with rate 0.10
+  missing_variables_30: full metric-channel missingness with rate 0.30
+  missing_variables_50: full metric-channel missingness with rate 0.50
+  delayed_6: last 6 input steps unavailable
+  delayed_12: last 12 input steps unavailable
+  delayed_24: last 24 input steps unavailable
+  noise_10: Gaussian input noise with std 0.10
+  noisy: Gaussian input noise with std 0.20
+  noise_40: Gaussian input noise with std 0.40
+  burst: sparse positive spikes with rate 0.02
+  level_shift: add 0.40 to the second half of the input window
+
+baselines:
+  native:
+    - LastValue
+    - DLinear
+    - RACE-DLinear
+    - PatchTST-lite
+  official:
+    - name: official PatchTST
+      protocol: native NPZ/stress pipeline on Alibaba2018
+    - name: official iTransformer
+      protocol: native NPZ/stress wrapper when available; LTSF CSV bridge kept as a reference
+    - name: official TimeMixer
+      protocol: THUML Time-Series-Library model class inside the native NPZ/stress wrapper
+    - name: Chronos-Bolt reference
+      protocol: bounded target-metric zero-shot A6000 reference on 512 windows per source
+
+stressroute:
+  status: system contribution candidate for ICDM 2027
+  role: deployment-aware model-selection policy, not a forecasting backbone
+  policies:
+    - fixed DLinear
+    - fixed PatchTST-lite
+    - StressRoute v1 rule router
+    - StressRoute v2 Logistic Regression router
+    - oracle selector upper bound
+  candidates:
+    - DLinear
+    - RACE-DLinear
+    - PatchTST-lite
+    - official PatchTST native
+    - native iTransformer when protocol is comparable
+  inputs:
+    - telemetry health features
+    - latency budget
+    - deployment objective
+  outputs:
+    - selected model
+    - selected-model distribution
+    - latency-constrained regret
+    - oracle gap
+    - budget feasibility
+    - capacity cost versus DLinear
+    - latency versus PatchTST-lite
+
+metrics:
+  forecast_quality: [MSE, MAE]
+  deployment_cost: [P50_latency_ms, P95_latency_ms, parameters, GPU_memory_MB]
+  stress_robustness: [mean_stress_MSE, worst_stress_MSE, mean_capacity_proxy]
+  forecast_to_capacity:
+    policies: [forecast_capacity, last_observed, reactive_hpa]
+    default_headroom: 0.15
+    under_cost: 5.0
+    over_cost: 1.0
+    cost_ratio_sensitivity: ["2:1", "5:1", "10:1"]
+    demand_floor: 0.05
+    target_metric: 0
+    reactive_hpa_role: controller reference, not a forecasting model pool member
+    headroom_sensitivity: [0.05, 0.15, 0.30]
+    outputs:
+      - under_provision_rate
+      - under_provision_area
+      - over_provision_area
+      - peak_miss_rate
+      - severe_under_rate
+      - p95_under_ratio
+      - total_normalized_cost
+
+primary_outputs:
+  paper_tables: outputs/paper_tables
+  paper_figures: outputs/paper_figures
+  decision_report: outputs/decision_report/README.md
+  anonymous_artifact_guide: ANON_ARTIFACT.md
+  paper_source: paper/main.tex
+  paper_pdf: paper/main.pdf
+
+required_tables:
+  - outputs/paper_tables/table_benchmark_card.csv
+  - outputs/paper_tables/table_baseline_fairness.csv
+  - outputs/paper_tables/table_dataset_audit.csv
+  - outputs/paper_tables/table_capacity_simulator.csv
+  - outputs/paper_tables/table_stressroute_v1.csv
+  - outputs/paper_tables/table_stressroute_policy_summary.csv
+  - outputs/paper_tables/table_structural_findings.csv
+  - outputs/paper_tables/table_severity_auc.csv
+  - outputs/paper_tables/table_multiseed_stability.csv
+  - outputs/paper_tables/table_multiseed_compact.csv
+  - outputs/paper_tables/table_capacity_cost_ratio_sensitivity.csv
+  - outputs/paper_tables/table_stress_realism_audit.csv
+  - outputs/paper_tables/table_imputation_pipeline.csv
+  - outputs/paper_tables/table_case_consequence.csv
+  - outputs/paper_tables/table_scenario_winners_all_available.csv
+  - paper/tables/practitioner_decision_box.tex
+  - outputs/official_timemixer_native_summary.csv
+  - outputs/official_timemixer_salesforce_borg_256x2048_summary.csv
+  - outputs/strong_probe/foundation_reference_a6000/foundation_reference_summary.csv
+  - outputs/strong_probe/foundation_reference_a6000/foundation_reference_compact_table.csv
+  - outputs/strong_probe/foundation_reference_a6000/foundation_reference_decision.md
+  - outputs/strong_probe/defensive_tables/multiseed_core_compact.csv
+  - outputs/strong_probe/defensive_tables/expanded_multiseed_official_stats.csv
+  - outputs/strong_probe/defensive_tables/expanded_multiseed_official_winners.csv
+  - outputs/strong_probe/defensive_tables/expanded_multiseed_official_decision.md
+  - outputs/strong_probe/defensive_tables/stressroute_regret_compact.csv
+  - outputs/strong_probe/defensive_tables/stressroute_regret_decision.md
+  - outputs/natural_proxy_slice/natural_proxy_slice_metrics.csv
+  - outputs/natural_proxy_slice/natural_proxy_slice_winners.csv
+  - outputs/natural_proxy_slice/natural_proxy_slice_summary.csv
+  - outputs/natural_proxy_slice/natural_proxy_slice_decision.md
+  - outputs/natural_proxy_slice/natural_slice_report.md
+  - outputs/paper_tables/table_natural_degradation_slices.csv
+  - paper/tables/natural_degradation_slices.tex
+  - outputs/public_fault_slice/fault_slice_metrics.csv
+  - outputs/public_fault_slice/fault_slice_winners.csv
+  - outputs/public_fault_slice/fault_slice_summary.csv
+  - outputs/public_fault_slice/fault_slice_decision.md
+  - outputs/public_fault_slice_v2/fault_slice_v2_metrics.csv
+  - outputs/public_fault_slice_v2/fault_slice_v2_winners.csv
+  - outputs/public_fault_slice_v2/fault_slice_v2_summary.csv
+  - outputs/public_fault_slice_v2/fault_slice_v2_compact.csv
+  - outputs/public_fault_slice_v2/fault_slice_v2_decision.md
+  - outputs/public_fault_slice_v2/fault_slice_v2_skipped.json
+  - outputs/learned_imputation_pipeline/learned_imputation_metrics.csv
+  - outputs/learned_imputation_pipeline/learned_imputation_summary.csv
+  - outputs/learned_imputation_pipeline/learned_imputation_decision.md
+
+required_figures:
+  - outputs/paper_figures/figure_aiopsstressbench_pipeline.pdf
+  - outputs/paper_figures/figure_multisource_deployment_stress.pdf
+  - outputs/paper_figures/netman_missing_variables_30_overlay.pdf
+  - outputs/paper_figures/salesforce_borg_delayed_12_overlay.pdf
+  - outputs/paper_figures/netman_missing_30_overlay.pdf
+  - outputs/paper_figures/alibaba2018_missing_variables_30_overlay.pdf
+
+non_claims:
+  - RACE-DLinear is not the main contribution and should not be described as SOTA.
+  - The capacity simulator is a reproducible deployment proxy, not a production autoscaling simulator.
+  - Alibaba2018 supports machine-level resource telemetry claims, not service-level SLO claims.
+  - Chronos-Bolt is a bounded zero-shot reference, not a complete foundation-model comparison.
+  - Main winner tables exclude LastValue, Chronos-Bolt, and LTSF-bridge iTransformer from core learned-model ranking claims.
+  - Stress realism audit uses public-trace proxies and does not claim to observe unreleased operator ingestion-delay distributions.
+  - Public fault-injection slice evaluation is sanity evidence, not production incident validation; RCAEval RE1-OB remains caution evidence, while RE2-OB provides short-window public fault-injection evidence with pre-injection-only training and latency-target decision cost.
+  - Imputation pipeline rows are preprocessing baselines and do not enter the core model winner table unless explicitly labeled as pipeline comparisons.
+  - The learned mask-aware imputer is a bounded preprocessing probe, not a complete learned-imputation benchmark.
+
