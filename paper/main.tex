@@ -179,9 +179,7 @@ The same stress-family pattern appears beyond the Alibaba detail table. On metri
 
 Takeaway: common imputation pipelines can reduce point-missing damage, but they do not eliminate deployment-stress evaluation because channel outage and stale context still change the model choice.
 
-Real monitoring pipelines often apply simple repair before forecasting. We therefore add DLinear and PatchTST-lite with forward-fill and mean-fill preprocessing after stress injection. The ground truth remains clean. Table~\ref{tab:imputation-pipeline} treats these rows as pipeline baselines, not as new forecasting architectures. If simple imputation solves a stress family, the benchmark should show that; if it does not, the remaining gap is stronger evidence that AIOps forecasting must evaluate degraded telemetry explicitly.
-
-\input{tables/imputation_pipeline}
+Real monitoring pipelines often apply simple repair before forecasting. We therefore add DLinear and PatchTST-lite with forward-fill and mean-fill preprocessing after stress injection. The ground truth remains clean. These rows are pipeline baselines, not new forecasting architectures; the full generated imputation table is retained in the artifact.
 
 The pattern is consistent with deployment intuition. On point missingness, simple repair can help: Alibaba DLinear missing-30 capacity cost drops from 0.508 without repair to about 0.414--0.415 with mean or forward-fill. However, whole-channel outage is not solved by filling because the missing channel carries no contemporaneous information in the window; Alibaba DLinear missing-variable capacity cost remains 0.889 across no-fill, forward-fill, and mean-fill. Thus imputation is a useful pipeline baseline, but it does not remove the need to evaluate telemetry outage and stale-context stresses.
 
