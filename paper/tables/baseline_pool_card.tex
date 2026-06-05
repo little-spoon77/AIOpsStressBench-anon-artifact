@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\scriptsize
+\caption{Compact baseline-pool comparability card for interpreting winner tables.}
+\label{tab:baseline-pool-card}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{p{0.18\linewidth}p{0.31\linewidth}p{0.31\linewidth}p{0.16\linewidth}}
+\toprule
+Pool & Models & Training/protocol & Used for \\
+\midrule
+Lightweight core & DLinear; RACE-DLinear; PatchTST-lite & Same clean chronological windows; RACE marked stress-aware & Five-seed claims \\
+Official/native wrappers & Official PatchTST; Native iTransformer; Official TimeMixer & Same NPZ/stress protocol where available & Coverage and single-run winner tables \\
+References & LastValue; Chronos-Bolt; LTSF bridge & Not comparable supervised training & Context only; excluded from winner selection \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

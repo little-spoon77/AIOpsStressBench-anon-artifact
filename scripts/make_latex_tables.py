@@ -192,6 +192,41 @@ def make_baseline_fairness_table(table_dir: Path) -> str:
     return table_env("tab:baseline-fairness", "Baseline fairness and protocol comparability card.", body, size=r"\tiny", resize=True)
 
 
+def make_baseline_pool_card_table(_: Path) -> str:
+    rows = [
+        [
+            "Lightweight core",
+            "DLinear; RACE-DLinear; PatchTST-lite",
+            "Same clean chronological windows; RACE marked stress-aware",
+            "Five-seed claims",
+        ],
+        [
+            "Official/native wrappers",
+            "Official PatchTST; Native iTransformer; Official TimeMixer",
+            "Same NPZ/stress protocol where available",
+            "Coverage and single-run winner tables",
+        ],
+        [
+            "References",
+            "LastValue; Chronos-Bolt; LTSF bridge",
+            "Not comparable supervised training",
+            "Context only; excluded from winner selection",
+        ],
+    ]
+    body = tabular(
+        ["Pool", "Models", "Training/protocol", "Used for"],
+        rows,
+        align="p{0.18\\linewidth}p{0.31\\linewidth}p{0.31\\linewidth}p{0.16\\linewidth}",
+    )
+    return table_env(
+        "tab:baseline-pool-card",
+        "Compact baseline-pool comparability card for interpreting winner tables.",
+        body,
+        size=r"\scriptsize",
+        resize=True,
+    )
+
+
 def make_stress_taxonomy_table(_: Path) -> str:
     rows = [
         ["Missing points", "Random input values unavailable", "Packet loss, scraper gaps", "Robustness curve"],
@@ -1005,6 +1040,7 @@ def main() -> None:
     tables = {
         "benchmark_card.tex": make_benchmark_card_table(table_dir),
         "baseline_fairness.tex": make_baseline_fairness_table(table_dir),
+        "baseline_pool_card.tex": make_baseline_pool_card_table(table_dir),
         "dataset_audit.tex": make_dataset_table(table_dir),
         "stress_taxonomy.tex": make_stress_taxonomy_table(table_dir),
         "clean_alibaba.tex": make_clean_table(table_dir),
