@@ -1,4 +1,4 @@
-﻿# Anonymous Artifact Guide
+# Anonymous Artifact Guide
 
 This guide is the reviewer-facing entry point for the anonymous artifact of:
 
@@ -13,7 +13,7 @@ The artifact reproduces:
 - public-data conversion into the common NPZ tensor format;
 - deployment-stress forecasting runs;
 - generated paper tables and figures;
-- compact main-paper evidence tables for cross-source winners, capacity sensitivity, and RE2-OB sanity checking;
+- compact main-paper evidence tables for cross-source winners, stress-realism proxies, and capacity sensitivity;
 - forecast-to-capacity proxy outputs;
 - StressRoute policy summaries;
 - bounded Chronos-Bolt zero-shot reference outputs;
@@ -41,7 +41,7 @@ It should exclude shell history, host aliases, personal identifiers, absolute wo
 
 `FINAL_CLAIM_AUDIT.md` is the claim-to-evidence map used before submission. It links each main paper claim to the main-text table/figure and the CSV or figure artifact that supports it.
 
-The current main paper prioritizes compact evidence tables. `paper/tables/cross_source_winners.tex` is generated from `outputs/paper_tables/table_scenario_winners.csv`; `paper/tables/capacity_sensitivity_compact.tex` is generated from `outputs/paper_tables/table_capacity_cost_ratio_sensitivity.csv` and `outputs/paper_tables/table_capacity_horizon_sensitivity.csv`; `paper/tables/public_fault_mini.tex` is generated from `outputs/public_fault_slice_v2/fault_slice_v2_compact.csv`.
+The current main paper prioritizes compact evidence tables. `paper/tables/cross_source_winners.tex` is generated from `outputs/paper_tables/table_scenario_winners.csv`; `paper/tables/stress_realism_proxy.tex` is generated from `outputs/paper_tables/table_stress_realism_audit.csv`; `paper/tables/capacity_sensitivity_compact.tex` is generated from `outputs/paper_tables/table_capacity_cost_ratio_sensitivity.csv` and `outputs/paper_tables/table_capacity_horizon_sensitivity.csv`. RE2-OB fault-injection outputs remain artifact sanity evidence under `outputs/public_fault_slice_v2/`.
 
 Case-study stress consequences are generated from the existing case-study metric files under `outputs/paper_figures/*_metrics.csv` and summarized in `outputs/paper_tables/table_case_consequence.csv`. They support mechanism-level checks rather than main-paper aggregate evidence.
 
@@ -365,4 +365,3 @@ The artifact does not claim:
 - Alibaba or Salesforce/Borg are service-level SLO traces;
 - Chronos-Bolt tiny represents all foundation models;
 - StressRoute is a finished router or optimized deployment policy.
-

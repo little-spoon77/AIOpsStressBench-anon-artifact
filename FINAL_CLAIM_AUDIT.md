@@ -40,7 +40,7 @@ It is intended for final submission checking, not as a paper section.
 
 - Paper evidence:
   - `paper/tables/stress_taxonomy.tex`
-  - `paper/tables/public_fault_mini.tex`
+  - `paper/tables/stress_realism_proxy.tex`
   - `paper/main.tex`: Stress Realism Audit.
 - Artifact sources:
   - `outputs/paper_tables/table_stress_realism_audit.csv`
@@ -61,7 +61,7 @@ It is intended for final submission checking, not as a paper section.
   - Public traces are cleaned and underrepresent monitoring failures.
   - Tail-flatline and flatline statistics are proxies, not direct evidence of real ingestion delay.
   - Natural proxy slice rows are reviewer-defense / artifact evidence, not main-claim evidence. They are sanity checks on naturally abnormal public-trace windows. Alibaba shows MSE and decision-objective changes, while Salesforce/Borg mainly shows a capacity-winner change.
-  - Public fault-injection slice evaluation is a sanity check, not incident validation. RCAEval RE1-OB is artifact-only caution evidence because normal and fault windows do not show strong enough forecasting separation. RE2-OB Online Boutique is now summarized in the main paper as a compact sanity-check row: the pre-injection segment is split into train-normal and held-out-normal with a one-horizon gap; models and scalers use only train-normal windows; fault evaluation starts after the injection boundary; forecasters are trained per case with seed 42; and 58 parsed cases produce 9 held-out-normal-to-fault best-MSE changes plus 11 fault-window MSE-vs-decision-cost disagreements. The target is Istio P99 latency, so the proxy is labeled decision cost rather than resource-capacity cost for this probe.
+  - Public fault-injection slice evaluation is a sanity check, not incident validation. RCAEval RE1-OB is artifact-only caution evidence because normal and fault windows do not show strong enough forecasting separation. RE2-OB Online Boutique is retained as artifact evidence: the pre-injection segment is split into train-normal and held-out-normal with a one-horizon gap; models and scalers use only train-normal windows; fault evaluation starts after the injection boundary; forecasters are trained per case with seed 42; and 58 parsed cases produce 9 held-out-normal-to-fault best-MSE changes plus 11 fault-window MSE-vs-decision-cost disagreements. The target is Istio P99 latency, so the proxy is labeled decision cost rather than resource-capacity cost for this probe.
   - Documentation citations support the operational plausibility of missing data, stale series, metric latency, and unavailable autoscaling metrics.
 
 ## Claim 3a: AIOpsStressBench is not only another clean forecasting benchmark
@@ -144,7 +144,7 @@ It is intended for final submission checking, not as a paper section.
   - `outputs/paper_figures/*_metrics.csv`
   - `outputs/paper_figures/*_overlay.pdf`
 - Scope:
-  - The main paper keeps a compact case-study paragraph and moves overlay figures out of the main text to make room for cross-source, capacity-sensitivity, and RE2-OB evidence.
+  - The main paper keeps a compact case-study paragraph and moves overlay figures out of the main text to make room for cross-source, stress-realism proxy, and capacity-sensitivity evidence.
   - Case metrics are derived from existing case-study windows.
   - They summarize local capacity proxy, under-provision rate, and P95 latency; they are not new experiments.
 

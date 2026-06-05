@@ -30,7 +30,7 @@ This checklist is for the final AIOpsStressBench ICDM Applied Track submission p
 - [ ] LastValue, Chronos-Bolt, and LTSF-bridge iTransformer are excluded from the core learned winner pool.
 - [ ] GAIA and NetMan are used only for KPI stress diversity and case studies, not resource-capacity conclusions.
 - [ ] Main-paper five-seed claims trace to `outputs/five_seed`, not old three-seed summaries.
-- [ ] RE2-OB numbers in the paper match `outputs/public_fault_slice_v2/fault_slice_v2_decision.md`.
+- [ ] RE2-OB is described as artifact sanity evidence, not as a main resource-capacity claim.
 
 ## Artifact
 
@@ -38,7 +38,7 @@ This checklist is for the final AIOpsStressBench ICDM Applied Track submission p
 - [ ] `benchmark_manifest.yaml` passes `python scripts/check_benchmark_manifest.py --manifest benchmark_manifest.yaml --root .`.
 - [ ] Main paper tables can be traced to `outputs/paper_tables/`.
 - [ ] Main paper figures can be traced to `outputs/paper_figures/`.
-- [ ] `paper/tables/cross_source_winners.tex`, `capacity_sensitivity_compact.tex`, and `public_fault_mini.tex` are generated from existing outputs only.
+- [ ] `paper/tables/cross_source_winners.tex`, `stress_realism_proxy.tex`, and `capacity_sensitivity_compact.tex` are generated from existing outputs only.
 - [ ] Five-seed tables can be traced to `outputs/five_seed/`.
 - [ ] RE2-OB public fault-injection sanity check can be traced to `outputs/public_fault_slice_v2/`.
 - [ ] Defensive probes are present under `outputs/strong_probe/defensive_tables/`.

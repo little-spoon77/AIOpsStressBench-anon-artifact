@@ -407,6 +407,37 @@ def make_public_fault_mini_table(table_dir: Path) -> str:
     )
 
 
+def make_stress_realism_proxy_table(table_dir: Path) -> str:
+    path = table_dir / "table_stress_realism_audit.csv"
+    if not path.exists():
+        return "\\label{tab:stress-realism-proxy}% table_stress_realism_audit.csv not available yet\n"
+    frame = pd.read_csv(path).set_index("dataset")
+    rows = []
+    proxy_rows = [
+        ("Zero-run ratio", "long_zero_run12_channel_rate", "Metric outage"),
+        ("Flatline windows", "flatline12_channel_rate", "Stale telemetry"),
+        ("Robust spike rate", "spike_fraction_z6", "Burst/noise"),
+        ("P95 level-shift score", "p95_level_shift_score", "Level shift"),
+    ]
+    for label, column, operator in proxy_rows:
+        rows.append(
+            [
+                label,
+                fmt(frame.loc["alibaba2018", column]),
+                fmt(frame.loc["salesforce_borg", column]),
+                operator,
+            ]
+        )
+    body = tabular(["Public-trace proxy", "Alibaba", "Salesforce/Borg", "Stress operator motivated"], rows, align="lrrl")
+    return table_env(
+        "tab:stress-realism-proxy",
+        "Compact stress-calibration proxies from public telemetry. Values motivate controlled operators but do not validate incident frequency.",
+        body,
+        size=r"\scriptsize",
+        resize=True,
+    )
+
+
 def make_capacity_simulator_winner_table(table_dir: Path) -> str:
     frame = pd.read_csv(table_dir / "table_capacity_simulator_winners.csv")
     source_labels = {"alibaba2018": "Alibaba", "salesforce_borg": "Salesforce/Borg"}
@@ -982,6 +1013,7 @@ def main() -> None:
         "cross_source_winners.tex": make_cross_source_winners_table(table_dir),
         "capacity_sensitivity_compact.tex": make_capacity_sensitivity_compact_table(table_dir),
         "public_fault_mini.tex": make_public_fault_mini_table(table_dir),
+        "stress_realism_proxy.tex": make_stress_realism_proxy_table(table_dir),
         "capacity_risk.tex": make_risk_table(table_dir),
         "capacity_simulator.tex": make_capacity_simulator_table(table_dir),
         "capacity_simulator_winners.tex": make_capacity_simulator_winner_table(table_dir),

@@ -62,6 +62,8 @@ Missing-value models and imputation methods such as GRU-D and BRITS show that in
 
 Existing clean forecasting, robustness, observability, and foundation-model benchmarks answer important but different questions. AIOpsStressBench narrows the target to a joint stress-to-decision question: under the same public operational trace, do telemetry degradation, latency budget, and asymmetric decision cost change which forecaster a practitioner would select?
 
+\input{tables/benchmark_positioning}
+
 \section{Application Scenario}
 
 We consider a cloud platform where machines, services, or KPI streams emit telemetry such as CPU utilization, memory utilization, network traffic, disk IO, and operational KPI values. A forecasting service receives the recent telemetry window and predicts a future horizon used by capacity planning, alerting, or autoscaling decisions.
@@ -95,9 +97,9 @@ We evaluate six deployment stresses. Missing points randomly mask individual inp
 
 Public operational traces are often cleaned before release and underrepresent monitoring failures, so we treat stress realism as calibration rather than validation. We audit observable public-trace proxies such as non-finite values, zero rates, long zero runs, flatline windows, robust spikes, and level-shift scores. These proxies motivate stress levels and boundary conditions, but they do not estimate operator-specific incident frequency or uniquely identify root causes such as exporter failure or ingestion delay. Metric outage has the clearest public-trace proxy support in Alibaba and Salesforce/Borg, while point missingness and tail delay remain controlled probes for reproducible sensitivity analysis.
 
-The public RE2-OB fault-injection slice is an external sanity check rather than incident validation. It is evaluated without additional injected corruption and tests whether externally provided fault-injection windows can expose the same type of ranking disagreement. Because the target is Istio P99 latency rather than resource demand, its asymmetric proxy is reported as decision cost rather than resource-capacity cost. Table~\ref{tab:public-fault-mini} summarizes the resulting 58 parsed cases.
+\input{tables/stress_realism_proxy}
 
-\input{tables/public_fault_mini}
+The public RE2-OB fault-injection slice is an external sanity check rather than incident validation. It is evaluated without additional injected corruption and tests whether externally provided fault-injection windows can expose the same type of ranking disagreement; the 58-case compact summary is retained in the artifact because the target is Istio P99 latency rather than resource demand.
 
 \section{Datasets}
 
@@ -117,20 +119,25 @@ Native pipeline baselines include last-value, DLinear, RACE-DLinear, and a light
 
 Official PatchTST is integrated by importing the official model class and evaluating it inside the native NPZ/stress pipeline. This keeps missing-variable stress and decision-proxy evaluation comparable with native baselines. Official iTransformer and TimeMixer are evaluated with native wrappers on the two multivariate telemetry sources for the core deployment stresses. Chronos-Bolt is evaluated only as a zero-shot target-metric reference on a bounded subset, not as a full foundation-model benchmark. Older LTSF-bridge iTransformer runs are retained only as reference analysis because they flatten entity-metric channels and are not perfectly equivalent to the native per-entity target protocol.
 
-Baseline comparability is enforced by the native NPZ windows, the same stress operators, the same target metric, and the same latency profiler. The main winner tables exclude LastValue, Chronos-Bolt, and LTSF-bridge rows from learned-model selection; implementation, budget, and coverage details are summarized in the generated baseline-fairness card.
+Baseline comparability is enforced by the native NPZ windows, the same stress operators, the same target metric, and the same latency profiler. All supervised learned models are trained on the same clean chronological training windows unless explicitly marked as stress-augmented; all stress results are test-time input corruptions with clean targets. RACE-DLinear is the stress-aware/training-stress baseline and is not positioned as a leading-model claim. Official wrappers are comparable references, not members of the lightweight five-seed pool. The main winner tables exclude LastValue, Chronos-Bolt, and LTSF-bridge rows from learned-model selection; implementation, budget, and coverage details are summarized in the generated baseline-fairness card.
 
 \section{Metrics}
 
 We report MSE and MAE, but they are not sufficient for the Applied story. We also report P95 latency, parameter count, GPU memory, and a forecast-to-capacity decision proxy.
 
-The forecast-to-capacity decision proxy compares predicted capacity with true demand under a headroom factor. It penalizes under-provisioning more heavily than over-provisioning:
+The forecast-to-capacity decision proxy compares predicted capacity with true demand under a headroom factor. Models may train and predict on standardized tensors, but decision costs are computed after inverse transformation on the original non-negative resource scale. For a normalized forecast $\hat{z}_t$, let $\hat{y}^{raw}_t=\mathrm{inv\_norm}(\hat{z}_t)$ and let $y^{raw}_t$ be the raw target demand. The proxy provisions
 \begin{equation}
-\text{cost} = c_u \frac{\max(y - \hat{y}(1+h), 0)}{\max(|y|, \epsilon)}
- + c_o \frac{\max(\hat{y}(1+h)-y, 0)}{\max(|y|, \epsilon)}.
+c_t=\max(\hat{y}^{raw}_t,0)(1+h),
+\end{equation}
+then computes
+\begin{equation}
+\text{cost}_t =
+c_u \frac{\max(y^{raw}_t-c_t,0)}{\max(y^{raw}_t,\epsilon)}
++ c_o \frac{\max(c_t-y^{raw}_t,0)}{\max(y^{raw}_t,\epsilon)}.
 \end{equation}
 This metric is a decision proxy rather than an autoscaling system. It intentionally excludes queueing, cold starts, scheduler constraints, service dependencies, closed-loop control delay, and service-level SLOs. We use the proxy for one narrow purpose: to test whether forecasts with similar MSE can imply different under- and over-provisioning consequences under a fixed asymmetric-cost protocol. The default $c_u:c_o=5:1$ encodes the operational assumption that resource starvation or missed capacity is more costly than short-lived over-provisioning waste; Table~\ref{tab:capacity-sensitivity-compact} reports compact sensitivity checks.
 
-Unless otherwise noted, we use headroom $h=0.15$, under-provision cost $c_u=5.0$, over-provision cost $c_o=1.0$, and demand floor $\epsilon=0.05$. The target is metric index 0 for each dataset. Costs are computed per entity, window, horizon step, and target metric, then averaged over the evaluated test windows. The same target metric is used for forecast accuracy and the capacity proxy.
+Unless otherwise noted, we use headroom $h=0.15$, under-provision cost $c_u=5.0$, over-provision cost $c_o=1.0$, and demand floor $\epsilon=0.05$. The target is metric index 0 for each dataset: \texttt{cpu\_util\_percent} for Alibaba and \texttt{target\_0} for the Salesforce/Borg public subset, treated as a non-negative resource-demand proxy. Costs are computed per entity, window, horizon step, and target metric, then averaged over the evaluated test windows. The same target metric is used for forecast accuracy and the capacity proxy.
 
 \subsection{Forecast-to-Capacity Decision Proxy}
 

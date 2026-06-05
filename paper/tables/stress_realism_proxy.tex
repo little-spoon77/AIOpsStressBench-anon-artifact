@@ -1,0 +1,18 @@
+\begin{table}[t]
+\centering
+\scriptsize
+\caption{Compact stress-calibration proxies from public telemetry. Values motivate controlled operators but do not validate incident frequency.}
+\label{tab:stress-realism-proxy}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lrrl}
+\toprule
+Public-trace proxy & Alibaba & Salesforce/Borg & Stress operator motivated \\
+\midrule
+Zero-run ratio & 0.0328 & 0.1886 & Metric outage \\
+Flatline windows & 0.625 & 0.654 & Stale telemetry \\
+Robust spike rate & 0.0062 & 0.0231 & Burst/noise \\
+P95 level-shift score & 1.7032 & 1.3717 & Level shift \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
