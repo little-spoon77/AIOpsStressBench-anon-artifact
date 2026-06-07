@@ -6,22 +6,25 @@
 \usepackage{url}
 \usepackage{xcolor}
 \usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{array}
 
-\graphicspath{{../outputs/paper_figures/}}
+\graphicspath{{figures/}}
 
 \title{AIOpsStressBench: An Offline Stress-to-Decision Benchmark for Operational Time-Series Forecasting}
 
 \author{
-\IEEEauthorblockN{Anonymous Authors}
-\IEEEauthorblockA{Anonymous Affiliation}
+\IEEEauthorblockN{Sicheng Han, Xinyue Chen, Dongyi Lv, Tianyang Shen, Jianhua Mao, Ting Wei, and Zhi Wang\IEEEauthorrefmark{1}}
+\IEEEauthorblockA{School of Software Engineering, Xi'an Jiaotong University, Xi'an, China\\
+Email: zhiwang@xjtu.edu.cn\\
+\IEEEauthorrefmark{1}Corresponding author}
 }
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-Time-series forecasting is widely used in cloud operations for capacity planning, alerting, and risk mitigation, but standard benchmarks usually evaluate models on clean, synchronized, offline data. Operational telemetry can be missing, delayed, partially unavailable, shifted by workload changes, and constrained by latency and memory budgets. We present AIOpsStressBench, a reproducible offline stress-to-decision benchmark for operational time-series forecasting. It combines public CloudOps/AIOps telemetry, controlled telemetry-stress operators, latency and memory profiling, severity analysis, and a forecast-to-capacity decision proxy. Rather than asking only which model minimizes clean MSE, the benchmark tests whether model rankings remain stable when telemetry health, latency budgets, and asymmetric decision costs change. Across two multivariate operational traces, we find that the clean-MSE winner, the lowest-latency learned model, and the lowest decision-cost model often differ. Patch-based context modeling improves robustness under metric-channel outage, but this advantage is stress-family specific and incurs higher inference cost. These results show that operational forecasting requires stress-to-decision evaluation in addition to clean-error leaderboards.
+Time-series forecasting is widely used in cloud operations for capacity planning, alerting, and risk mitigation, but standard benchmarks usually evaluate models on clean, synchronized, offline data. Operational telemetry can be missing, delayed, partially unavailable, shifted by workload changes, and constrained by latency and memory budgets. We present AIOpsStressBench, a reproducible offline stress-to-decision benchmark for operational time-series forecasting. It combines public CloudOps/AIOps telemetry, controlled telemetry-stress operators, latency and memory profiling, severity analysis, and a forecast-to-capacity open-loop decision proxy. Rather than asking only which model minimizes clean MSE, the benchmark tests whether model rankings remain stable when telemetry health, latency budgets, and asymmetric decision costs change. Across two multivariate operational traces, we find that the clean-MSE winner, the lowest-latency learned model, and the lowest decision-cost model often differ. Patch-based context modeling improves robustness under metric-channel outage, but this advantage is stress-family specific and incurs higher inference cost. These results show that operational forecasting requires stress-to-decision evaluation in addition to clean-error leaderboards.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -30,20 +33,20 @@ AIOps, time-series forecasting, deployment stress, robustness, latency, CloudOps
 
 \section{Introduction}
 
-Cloud operations increasingly rely on time-series forecasting to support resource planning, autoscaling, alerting, and operational risk control. Forecasts of CPU utilization, memory pressure, network traffic, disk IO, and operational KPIs can determine whether a system scales early enough before a workload spike, avoids unnecessary over-provisioning, or detects abnormal behavior before users are affected. In this setting, forecasting errors have direct operational meaning: underestimation can translate into resource starvation and risk, while overestimation can lead to persistent waste.
+Cloud operations increasingly rely on time-series forecasting to support resource planning, autoscaling, alerting, and operational risk control. Forecasts of CPU utilization, memory pressure, network traffic, disk IO, and operational KPIs can determine whether a system scales early enough before a workload spike, avoids unnecessary over-provisioning, or detects abnormal behavior before users are affected. Production resource-management and autoscaling systems further motivate this connection between prediction, resource risk, and operational cost \cite{autopilot,sinan,ahpa,k8s_hpa}. In this setting, forecasting errors have direct operational meaning: underestimation can translate into resource starvation and risk, while overestimation can lead to persistent waste.
 
-Most long-term time-series forecasting studies evaluate models under a clean offline protocol, even when they introduce stronger backbones such as linear decomposition, patch-based Transformers, inverted attention, or multiscale mixing \cite{dlinear,patchtst,itransformer,timemixer}. The input window is assumed to be available, synchronized, and drawn from a stable distribution. This assumption is too optimistic for CloudOps telemetry. Monitoring pipelines can drop individual points, lose entire metric channels, delay recent samples, or observe sudden level shifts after releases, migrations, workload changes, and mitigation actions. At the same time, online forecasting can be constrained by P95 latency, memory footprint, and update cost.
+Most long-term time-series forecasting studies evaluate models under a clean offline protocol, even when they introduce stronger backbones such as linear decomposition, patch-based Transformers, inverted attention, or multiscale mixing \cite{dlinear,patchtst,itransformer,timemixer}. Forecasting archives and benchmarks such as M4, Monash, GIFT-Eval, and fev-bench broaden reproducible comparison across domains and model families \cite{m4,monash,gifteval,fevbench}, while recent CloudOps and observability datasets highlight the heterogeneity of operational telemetry \cite{cloudops,boom,alibaba,gaia,netman}. However, clean leaderboards usually assume that the input window is available, synchronized, and drawn from a stable distribution. This assumption is too optimistic for CloudOps telemetry. Monitoring pipelines can drop individual points, lose entire metric channels, delay recent samples, or observe sudden level shifts after releases, migrations, workload changes, and mitigation actions \cite{gcm_missing,gcm_latency,prom_staleness}. At the same time, online forecasting can be constrained by P95 latency, memory footprint, and update cost.
 
-This paper studies AIOps forecasting under controlled offline deployment-stress. We build AIOpsStressBench, a reproducible evaluation pipeline that combines public operational datasets, stress protocols, deployment-cost metrics, a forecast-to-capacity decision proxy, and case studies. The core question is not which model wins a clean leaderboard, but whether clean-model rankings remain stable when telemetry health, latency budget, and asymmetric decision costs change. Thus AIOpsStressBench is a stress-to-decision benchmark for within-protocol model-selection evidence on public operational telemetry. This is an applied benchmark and experimental-analysis paper: it does not propose a new forecasting architecture, but provides a reproducible deployment-stress selection layer for CloudOps forecasting.
+This leaves an applied evaluation gap. A practitioner choosing a forecasting model for monitoring or planning needs more than a clean MSE score: the selected model should remain interpretable under missing telemetry, metric-channel outage, stale context, workload shift, latency limits, memory limits, and asymmetric under- versus over-provisioning costs. These factors are usually evaluated separately, if at all, so a clean leaderboard can hide the fact that different operational objectives select different models.
 
-The paper is not a method-first forecasting paper and does not claim a new forecasting architecture. RACE-DLinear is included only as a lightweight robust baseline. The contribution is the benchmark protocol and the resulting accuracy--robustness--latency--decision analysis.
+This paper studies AIOps forecasting under controlled offline deployment-stress. We build AIOpsStressBench, a reproducible evaluation pipeline that combines public operational datasets, chronological NPZ tasks, controlled telemetry-stress operators, supervised and official backbone baselines, latency and memory profiling, a forecast-to-capacity open-loop decision proxy, and case-study windows. The benchmark turns the model-selection question from ``which model wins a clean leaderboard?'' into ``which model remains preferable when telemetry health, latency budget, and asymmetric decision cost change?'' The result is a reproducible deployment-stress selection layer for CloudOps forecasting and an accuracy--robustness--latency--decision analysis over public operational telemetry.
 
 Our contributions are:
 \begin{itemize}
     \item We introduce AIOpsStressBench, a reproducible offline benchmark artifact for operational forecasting that combines public telemetry traces, fixed chronological splits, controlled telemetry-stress operators, and table/figure generation scripts.
-    \item We define a stress-to-decision evaluation protocol that jointly reports forecast accuracy, stress robustness, P95 latency, memory, and a forecast-to-capacity decision proxy.
+    \item We define a stress-to-decision evaluation protocol that jointly reports forecast accuracy, stress robustness, P95 latency, memory, and a forecast-to-capacity open-loop decision proxy.
     \item We provide cross-source model-selection evidence showing that the clean-MSE winner, the lowest-latency learned model, and the lowest decision-cost model can differ under the same operational telemetry protocol.
-    \item We document boundary conditions for the benchmark, including synthetic stress realism, KPI-versus-resource dataset roles, reactive-controller references, bounded foundation-model evidence, and reproducibility requirements.
+    \item We release a reviewer-auditable artifact with public-data conversion scripts, NPZ manifests, stress operators, model wrappers, table/figure generation scripts, and a minimal path for reproducing the main evidence chain.
 \end{itemize}
 
 \section{Related Work}
@@ -52,36 +55,40 @@ Our contributions are:
 Recent long-term forecasting work has improved accuracy through simple decomposition, patch tokenization, channel-wise inversion, multiscale mixing, and temporal variation modeling \cite{dlinear,patchtst,itransformer,timemixer,timesnet}. Forecasting benchmarks and archives such as M4, Monash, GIFT-Eval, and fev-bench broaden empirical comparison, reproducible infrastructure, covariate coverage, and aggregation rigor across domains and models \cite{m4,monash,gifteval,fevbench}. These efforts are important context, but their standard clean-data protocols do not directly answer whether a model remains deployable when telemetry is missing, delayed, shifted, or latency constrained.
 
 \noindent\textbf{Foundation models for time series.}
-Foundation models such as Chronos, Moirai, and TimesFM study pretraining and zero-shot forecasting across diverse time-series corpora \cite{chronos,moirai,timesfm}. Recent efficiency studies further argue that time-series foundation models should be evaluated with runtime or energy cost, not only accuracy \cite{fmenergy}. They are relevant to CloudOps because operational telemetry can be heterogeneous and costly to label or tune. This paper does not claim a systematic foundation-model benchmark. We include only a bounded Chronos-Bolt zero-shot reference on the two multivariate sources to report feasibility, latency, and stress sensitivity, while the main empirical claims remain restricted to reproducible supervised and official backbone comparisons under the native stress protocol.
+Foundation models such as Chronos, Moirai, and TimesFM study pretraining and zero-shot forecasting across diverse time-series corpora \cite{chronos,moirai,timesfm}. Recent efficiency studies further argue that time-series foundation models should be evaluated with runtime or energy cost, not only accuracy \cite{fmenergy}. They are relevant to CloudOps because operational telemetry can be heterogeneous and costly to label or tune. We therefore include a bounded Chronos-Bolt zero-shot reference on the two multivariate sources to report feasibility, latency, and stress sensitivity, while the main empirical claims focus on reproducible supervised and official backbone comparisons under the native stress protocol.
 
 \noindent\textbf{AIOps telemetry, autoscaling, and public traces.}
 CloudOps forecasting has recently received more attention through large-scale pretraining datasets such as the Salesforce CloudOps collection \cite{cloudops}. Observability-native benchmarks such as BOOM show that production observability metrics have heavy-tailed, heterogeneous structure and deserve domain-specific evaluation \cite{boom}. Public AIOps and cluster traces also support reproducible operational studies, including GAIA \cite{gaia}, NetMan KPI datasets \cite{netman}, Alibaba Cluster Trace 2018 \cite{alibaba}, and Borg-style workload traces inside the Salesforce CloudOps release. Autoscaling and resource-management systems such as Autopilot, Sinan, and AHPA motivate why forecast quality should be connected to operational cost and resource risk \cite{autopilot,sinan,ahpa}. Monitoring systems also expose practical telemetry concerns: missing data handling, metric freshness, stale series, and unavailable pod metrics are explicit operational cases in production monitoring and autoscaling documentation \cite{gcm_missing,gcm_latency,prom_staleness,k8s_hpa}. These sources and systems differ in granularity and application meaning; GAIA and NetMan are strong for KPI stress diversity, while Alibaba and Salesforce/Borg better support multivariate operational telemetry analysis.
 
 \noindent\textbf{Robust and deployment-aware evaluation.}
-Missing-value models and imputation methods such as GRU-D and BRITS show that incomplete time series need explicit treatment \cite{grud,brits}. Drift and out-of-distribution studies further show that clean validation can fail when the test distribution changes \cite{onenet,woods}. Robustness benchmarks such as WOODS study distribution shift, while observability benchmarks such as BOOM characterize production telemetry structure. AIOpsStressBench targets the gap between these lines: it does not compete on archive scale, but couples public operational telemetry, controlled telemetry-degradation operators, latency/memory profiling, a forecast-to-capacity decision proxy, and model-selection analysis in one reproducible stress-to-decision protocol.
+Missing-value models and imputation methods such as GRU-D and BRITS show that incomplete time series need explicit treatment \cite{grud,brits}. Drift and out-of-distribution studies further show that clean validation can fail when the test distribution changes \cite{onenet,woods}. Robustness benchmarks such as WOODS study distribution shift, while observability benchmarks such as BOOM characterize production telemetry structure. AIOpsStressBench targets the gap between these lines: it does not compete on archive scale, but couples public operational telemetry, controlled telemetry-degradation operators, latency/memory profiling, a forecast-to-capacity open-loop decision proxy, and model-selection analysis in one reproducible stress-to-decision protocol.
 
-Existing clean forecasting, robustness, observability, and foundation-model benchmarks answer important but different questions. AIOpsStressBench narrows the target to a joint stress-to-decision question: under the same public operational trace, do telemetry degradation, latency budget, and asymmetric decision cost change which forecaster a practitioner would select?
+Existing clean forecasting, robustness, observability, and foundation-model benchmarks answer important but different questions. Table~\ref{tab:benchmark-positioning} summarizes this positioning. AIOpsStressBench narrows the target to a joint stress-to-decision question: under the same public operational trace, do telemetry degradation, latency budget, and asymmetric decision cost change which forecaster a practitioner would select?
 
 \input{tables/benchmark_positioning}
 
-\section{Application Scenario}
+\section{Problem Definition}
 
-We consider a cloud platform where machines, services, or KPI streams emit telemetry such as CPU utilization, memory utilization, network traffic, disk IO, and operational KPI values. A forecasting service receives the recent telemetry window and predicts a future horizon used by capacity planning, alerting, or autoscaling decisions.
+Let an operational trace be a multivariate tensor $X\in\mathbb{R}^{E\times T\times M}$, where $E$ is the number of entities, $T$ is time, and $M$ is the number of telemetry metrics. From $X$ we construct chronological forecasting windows $(\mathbf{x}_t,\mathbf{y}_t)$ with input length $L=96$ and horizon $H=24$, where $\mathbf{x}_t\in\mathbb{R}^{E\times L\times M}$ is the recent context and $\mathbf{y}_t\in\mathbb{R}^{E\times H}$ is the target metric trajectory. A forecasting model $f_\theta$ produces $\hat{\mathbf{y}}_t=f_\theta(\mathbf{x}_t)$.
 
-The deployment setting differs from clean forecasting benchmarks in four ways. First, monitoring systems can drop individual samples or entire metrics. Second, recent telemetry can arrive late, making the tail of the context window unreliable. Third, workload bursts and operational changes can shift the recent context. Fourth, online inference may be constrained by latency and memory budgets. These constraints motivate an Applied evaluation that reports robustness and deployment cost, not only MSE and MAE.
+A clean forecasting benchmark evaluates $f_\theta$ on unmodified inputs. AIOpsStressBench instead evaluates the stressed input $\tilde{\mathbf{x}}_t=s_\phi(\mathbf{x}_t)$, where $s_\phi$ is a controlled telemetry-stress operator such as point missingness, metric-channel outage, delayed telemetry, noise, burst, or level shift. The target $\mathbf{y}_t$ remains clean, so the benchmark measures how input-side telemetry degradation changes forecasting and downstream model selection rather than changing the prediction target itself.
 
-We separate three deployment paths. A low-latency alerting path needs a cheap forecast every few minutes and should prioritize P95 latency and predictable memory use. A batch capacity-planning path can spend more compute but must reduce under-provisioning and peak misses over a longer horizon. A degraded-telemetry response path must remain meaningful when telemetry itself is unreliable, for example when a monitoring exporter stops reporting a metric channel. A single clean MSE table cannot distinguish these paths, so our evaluation asks which model is appropriate for each operational constraint.
+The selection problem is multi-objective. For each model and stress setting, we report accuracy $A(f_\theta,s_\phi)$, robustness degradation $R(f_\theta,s_\phi)$, P95 inference latency $\ell_{95}(f_\theta)$, memory $m(f_\theta)$, and a forecast-to-capacity open-loop decision proxy $C(f_\theta,s_\phi)$. The operational question is therefore not only
+\begin{equation}
+\arg\min_{f_\theta} A(f_\theta,\mathrm{clean}),
+\end{equation}
+but whether the preferred model changes when the selection criterion includes telemetry stress, latency or memory constraints, and asymmetric decision cost. This formalizes three common paths: low-latency alerting, batch capacity planning, and degraded-telemetry response.
 
 \section{Evaluation Pipeline}
 
-The evaluation pipeline has six stages. First, each dataset is audited and converted to a tensor with shape $[\text{entities}, \text{time}, \text{metrics}]$. Second, a rolling-window forecasting task is built with input length 96 and prediction horizon 24. Third, deployment stress is injected into the input window. Fourth, each model is evaluated by forecasting accuracy, latency, memory, and parameters. Fifth, predictions are passed to a forecast-to-capacity decision proxy. Sixth, selected windows are visualized as case studies.
+Figure~\ref{fig:pipeline} gives the pipeline overview, and Table~\ref{tab:benchmark-card} summarizes the benchmark card. The evaluation has six stages. First, each dataset is audited and converted to a tensor with shape $[\text{entities}, \text{time}, \text{metrics}]$. Second, a rolling-window forecasting task is built with input length 96 and prediction horizon 24. Third, deployment stress is injected into the input window. Fourth, each model is evaluated by forecasting accuracy, latency, memory, and parameters. Fifth, predictions are passed to a forecast-to-capacity open-loop decision proxy. Sixth, selected windows are visualized as case studies.
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=\linewidth]{figure_aiopsstressbench_pipeline.pdf}
+\includegraphics[width=\textwidth]{figure_aiopsstressbench_pipeline.pdf}
 \caption{AIOpsStressBench pipeline. Public telemetry is audited, windowed, evaluated under controlled offline deployment-stress operators, profiled for latency and memory, and connected to within-protocol decision-proxy analysis and case studies.}
 \label{fig:pipeline}
-\end{figure}
+\end{figure*}
 
 \input{tables/benchmark_card}
 
@@ -89,45 +96,45 @@ The evaluation pipeline has six stages. First, each dataset is audited and conve
 
 All experiments use input length 96, prediction horizon 24, seed 42, and chronological train/validation/test splits of 65\%/15\%/20\%. Stress is applied only to the input window at train or evaluation time; the forecasting target remains clean, so the protocol measures whether a model can make an operationally useful forecast from degraded telemetry.
 
-We evaluate six deployment stresses. Missing points randomly mask individual input values. Missing variables mask entire metric channels within an input window, simulating telemetry outage. Delayed tail masks the most recent 12 input steps, simulating late-arriving monitoring data. Noisy stress adds Gaussian input noise with standard deviation 0.2. Burst stress injects sparse positive spikes at rate 0.02. Level shift adds a constant shift of 0.4 to the second half of the input window, simulating release, migration, or workload-regime changes. These stresses are not meant to cover every production failure mode; they provide a reproducible minimum protocol for deployment-aware forecasting.
+We evaluate the six deployment stresses summarized in Table~\ref{tab:stress-taxonomy}. Missing points randomly mask individual input values. Missing variables mask entire metric channels within an input window, simulating telemetry outage. Delayed tail masks the most recent 12 input steps, simulating late-arriving monitoring data. Noisy stress adds Gaussian input noise with standard deviation 0.2. Burst stress injects sparse positive spikes at rate 0.02. Level shift adds a constant shift of 0.4 to the second half of the input window, simulating release, migration, or workload-regime changes. These stresses are not meant to cover every production failure mode; they provide a reproducible minimum protocol for deployment-aware forecasting.
 
 \input{tables/stress_taxonomy}
 
 \subsection{Stress Realism Audit}
 
-Public operational traces are often cleaned before release and underrepresent monitoring failures, so we treat stress realism as calibration rather than validation. We audit observable public-trace proxies such as non-finite values, zero rates, long zero runs, flatline windows, robust spikes, and level-shift scores. These proxies motivate stress levels and boundary conditions, but they do not estimate operator-specific incident frequency or uniquely identify root causes such as exporter failure or ingestion delay. Metric outage has the clearest public-trace proxy support in Alibaba and Salesforce/Borg, while point missingness and tail delay remain controlled probes for reproducible sensitivity analysis.
+Public operational traces are often cleaned before release and underrepresent monitoring failures, so we treat stress realism as calibration rather than validation. This calibration uses two complementary signals. First, as shown in Table~\ref{tab:stress-realism-proxy}, we audit compact public-trace proxies such as non-finite values, zero rates, long zero runs, flatline windows, robust spikes, and level-shift scores. Second, a public RE2-OB fault-injection slice provides external sanity evidence about whether externally provided fault windows can expose the same type of ranking disagreement. Together, these sources motivate stress levels and boundary conditions, but they do not estimate operator-specific incident frequency or uniquely identify root causes such as exporter failure or ingestion delay. Metric outage has the clearest public-trace proxy support in Alibaba and Salesforce/Borg, while point missingness and tail delay remain controlled probes for reproducible sensitivity analysis.
 
 \input{tables/stress_realism_proxy}
 
-The public RE2-OB fault-injection slice is an external sanity check rather than incident validation. It is evaluated without additional injected corruption and tests whether externally provided fault-injection windows can expose the same type of ranking disagreement; the 58-case compact summary is retained in the artifact because the target is Istio P99 latency rather than resource demand.
+The public RE2-OB fault-injection slice is evaluated without additional injected corruption and serves as complementary sanity evidence rather than incident validation; the 58-case compact summary is retained in the artifact because the target is Istio P99 latency rather than resource demand.
 
 \section{Datasets}
 
-GAIA metric forecast contains operational KPI series with categories such as periodic, changepoint, low-SNR, and partially-stationary behavior. It is useful for stress diversity, but it is mostly single-target KPI data.
+GAIA metric forecast \cite{gaia} contains operational KPI series with categories such as periodic, changepoint, low-SNR, and partially-stationary behavior. It is useful for stress diversity, but it is mostly single-target KPI data.
 
-NetMan KPI provides another public operational KPI source and supports missing-telemetry case studies. Like GAIA, it should not be overused for resource-capacity claims.
+NetMan KPI \cite{netman} provides another public operational KPI source and supports missing-telemetry case studies. Like GAIA, it should not be overused for resource-capacity claims.
 
-Alibaba Cluster Trace 2018 machine usage is the first multivariate source. We use machine-level CPU utilization, memory utilization, network in/out, and disk IO. It supports a resource-telemetry story, but it should not be described as service-level request telemetry.
+Alibaba Cluster Trace 2018 \cite{alibaba} machine usage is the first multivariate source. We use machine-level CPU utilization, memory utilization, network in/out, and disk IO. It supports a resource-telemetry story, but it should not be described as service-level request telemetry.
 
-Salesforce CloudOps/Borg 2011 is the second multivariate operational source. We convert the public Salesforce CloudOps TSF Borg split into a tensor with 256 entities, 2048 time steps, and 7 dynamic metrics. One caveat is that \texttt{dynamic\_4} is all zero in the current subset; we keep it in the released tensor for source-schema reproducibility and audit transparency, but exclude it from metric-level interpretation. This dataset strengthens the multi-source evidence because the same native stress suite, StressRoute policy, official baselines, severity curves, and multi-seed checks are reproduced beyond Alibaba.
+Salesforce CloudOps/Borg 2011 \cite{cloudops} is the second multivariate operational source. We convert the public Salesforce CloudOps TSF Borg split into a tensor with 256 entities, 2048 time steps, and 7 dynamic metrics. One caveat is that \texttt{dynamic\_4} is all zero in the current subset; we keep it in the released tensor for source-schema reproducibility and audit transparency, but exclude it from metric-level interpretation. This dataset strengthens the multi-source evidence because the same native stress suite, official baselines, severity curves, and multi-seed checks are reproduced beyond Alibaba.
 
 We use the datasets for different evidential roles. GAIA and NetMan support KPI stress diversity and degraded-telemetry case studies. Alibaba and Salesforce/Borg provide the main multivariate resource-telemetry evidence for latency, stress, and capacity-proxy analysis. Capacity-related conclusions are therefore reported only for resource-level telemetry sources and should not be extrapolated from KPI-only datasets.
 
 \section{Baselines}
 
-Native pipeline baselines include last-value, DLinear, RACE-DLinear, and a lightweight patch-based model. We use PatchTST-lite to denote our lightweight native patch-based implementation evaluated inside the unified NPZ/stress pipeline, and Official PatchTST to denote the imported official backbone evaluated through a native wrapper. RACE-DLinear is not the main contribution; it is a lightweight robust baseline used to test whether simple missing-aware linear modeling can improve deployment-stress behavior.
+Native pipeline baselines include last-value, DLinear \cite{dlinear}, RACE-DLinear, and a lightweight patch-based model. We use PatchTST-lite to denote our lightweight native patch-based implementation evaluated inside the unified NPZ/stress pipeline, and Official PatchTST \cite{patchtst} to denote the imported official backbone evaluated through a native wrapper. RACE-DLinear is a lightweight robust baseline used to test whether simple missing-aware linear modeling can improve deployment-stress behavior.
 
-Official PatchTST is integrated by importing the official model class and evaluating it inside the native NPZ/stress pipeline. This keeps missing-variable stress and decision-proxy evaluation comparable with native baselines. Official iTransformer and TimeMixer are evaluated with native wrappers on the two multivariate telemetry sources for the core deployment stresses. Chronos-Bolt is evaluated only as a zero-shot target-metric reference on a bounded subset, not as a full foundation-model benchmark. Older LTSF-bridge iTransformer runs are retained only as reference analysis because they flatten entity-metric channels and are not perfectly equivalent to the native per-entity target protocol.
+Official PatchTST is integrated by importing the official model class and evaluating it inside the native NPZ/stress pipeline. This keeps missing-variable stress and decision-proxy evaluation comparable with native baselines. Official iTransformer and TimeMixer \cite{itransformer,timemixer} are evaluated with native wrappers on the two multivariate telemetry sources for the core deployment stresses. Chronos-Bolt \cite{chronos} is evaluated only as a zero-shot target-metric reference on a bounded subset, not as a full foundation-model benchmark. Older LTSF-bridge iTransformer runs are retained only as reference analysis because they flatten entity-metric channels and are not perfectly equivalent to the native per-entity target protocol.
 
-Baseline comparability is enforced by the native NPZ windows, the same stress operators, the same target metric, and the same latency profiler. All supervised learned models are trained on the same clean chronological training windows unless explicitly marked as stress-augmented; all stress results are test-time input corruptions with clean targets. RACE-DLinear is the stress-aware/training-stress baseline and is not positioned as a leading-model claim. Official wrappers are comparable references, not members of the lightweight five-seed pool. The main winner tables exclude LastValue, Chronos-Bolt, and LTSF-bridge rows from learned-model selection.
+Baseline comparability is enforced by the native NPZ windows, the same stress operators, the same target metric, and the same latency profiler; Table~\ref{tab:baseline-pool-card} summarizes the model pools. All supervised learned models are trained on the same clean chronological training windows unless explicitly marked as stress-augmented; all stress results are test-time input corruptions with clean targets. RACE-DLinear is the stress-aware/training-stress baseline and is not positioned as a leading-model claim. Official wrappers are comparable references, not members of the lightweight five-seed pool. Where not otherwise stated, native and wrapped backbones follow the released settings from the original papers or official implementations after adapting input/output dimensions to the unified NPZ/stress pipeline; the released baseline-fairness card records the main implementation notes and core hyperparameter choices. The main winner tables exclude LastValue, Chronos-Bolt, and LTSF-bridge rows from learned-model selection.
 
 \input{tables/baseline_pool_card}
 
 \section{Metrics}
 
-We report MSE and MAE, but they are not sufficient for the Applied story. We also report P95 latency, parameter count, GPU memory, and a forecast-to-capacity decision proxy. Native latency profiling uses a forward-only stressed input batch of at most 32 windows, 8 warmup iterations, 40 timed iterations, and \texttt{torch.cuda.synchronize()} around CUDA timing; it excludes data loading and normalization. GPU memory is peak allocated memory from \texttt{torch.cuda.max\_memory\_allocated}. Native runs were observed on NVIDIA RTX 4090-class hardware, while the bounded Chronos-Bolt reference is reported separately from A6000 runs.
+We report MSE and MAE, but they are not sufficient for the Applied story. We also report P95 latency, parameter count, GPU memory, and a forecast-to-capacity open-loop decision proxy. Native latency profiling uses a forward-only stressed input batch of at most 32 windows, 8 warmup iterations, 40 timed iterations, and \texttt{torch.cuda.synchronize()} around CUDA timing; it excludes data loading and normalization. GPU memory is peak allocated memory from \texttt{torch.cuda.max\_memory\_allocated}. Native runs were observed on NVIDIA RTX 4090-class hardware, while the bounded Chronos-Bolt reference is reported separately from A6000 runs.
 
-The forecast-to-capacity decision proxy compares predicted capacity with true demand under a headroom factor. Models may train and predict on standardized tensors, but decision costs are computed after inverse transformation on the original non-negative resource scale. For a normalized forecast $\hat{z}_t$, let $\hat{y}^{raw}_t=\mathrm{inv\_norm}(\hat{z}_t)$ and let $y^{raw}_t$ be the raw target demand. The proxy provisions
+The forecast-to-capacity open-loop decision proxy compares predicted capacity with true demand under a headroom factor. Models may train and predict on standardized tensors, but decision costs are computed after inverse transformation on the original non-negative resource scale. For a normalized forecast $\hat{z}_t$, let $\hat{y}^{raw}_t=\mathrm{inv\_norm}(\hat{z}_t)$ and let $y^{raw}_t$ be the raw target demand. The proxy provisions
 \begin{equation}
 c_t=\max(\hat{y}^{raw}_t,0)(1+h),
 \end{equation}
@@ -137,13 +144,13 @@ then computes
 c_u \frac{\max(y^{raw}_t-c_t,0)}{\max(y^{raw}_t,\epsilon)}
 + c_o \frac{\max(c_t-y^{raw}_t,0)}{\max(y^{raw}_t,\epsilon)}.
 \end{equation}
-This metric is a decision proxy rather than an autoscaling system. It intentionally excludes queueing, cold starts, scheduler constraints, service dependencies, closed-loop control delay, and service-level SLOs. We use the proxy for one narrow purpose: to test whether forecasts with similar MSE can imply different under- and over-provisioning consequences under a fixed asymmetric-cost protocol. The default $c_u:c_o=5:1$ encodes the operational assumption that resource starvation or missed capacity is more costly than short-lived over-provisioning waste; Table~\ref{tab:capacity-sensitivity-compact} reports compact sensitivity checks.
+This metric is a reproducible forecast-to-capacity open-loop decision proxy. It intentionally excludes queueing, cold starts, scheduler constraints, service dependencies, closed-loop control delay, and service-level SLOs, and it does not apply feedback correction within the forecast horizon. We use the proxy for one narrow purpose: to test whether forecasts with similar MSE can imply different under- and over-provisioning consequences under a fixed asymmetric-cost protocol. The default $c_u:c_o=5:1$ encodes the operational assumption that resource starvation or missed capacity is more costly than short-lived over-provisioning waste; Table~\ref{tab:capacity-sensitivity-compact} reports compact sensitivity checks.
 
 Unless otherwise noted, we use headroom $h=0.15$, under-provision cost $c_u=5.0$, over-provision cost $c_o=1.0$, and demand floor $\epsilon=0.05$. The target is metric index 0 for each dataset: \texttt{cpu\_util\_percent} for Alibaba and \texttt{target\_0} for the Salesforce/Borg public subset, treated as a non-negative resource-demand proxy. Costs are computed per entity, window, horizon step, and target metric, then averaged over the evaluated test windows. The same target metric is used for forecast accuracy and the capacity proxy.
 
 \subsection{Forecast-to-Capacity Decision Proxy}
 
-To make the Applied evaluation less dependent on MSE and MAE, we add a forecast-to-capacity decision proxy. A forecast policy provisions $\max(\hat{y},0)(1+h)$ capacity for the future horizon. We compare forecasting policies with LastObserved and Reactive HPA references. LastObserved repeats the latest observed value, while Reactive HPA uses the previous realized demand as a one-step delayed controller sanity reference. The proxy reports under-provision area, over-provision area, peak-miss rate, severe-under rate, P95 under-provision ratio, and total normalized cost. Reactive HPA is not a proactive long-horizon forecasting policy; its latency is reported as a controller reference, and it is not eligible for clean/stress forecasting winner selection.
+To make the Applied evaluation less dependent on MSE and MAE, we add a forecast-to-capacity open-loop decision proxy. A forecast policy provisions $\max(\hat{y},0)(1+h)$ capacity for the future horizon. We report Reactive HPA as a controller reference; it uses the previous realized demand as a one-step delayed controller and helps separate online reaction from proactive capacity planning. The proxy reports under-provision area, over-provision area, peak-miss rate, severe-under rate, P95 under-provision ratio, and total normalized cost. Reactive HPA is reported as a controller reference rather than as a member of the clean/stress forecasting winner pool.
 
 \section{Results}
 
@@ -171,7 +178,7 @@ Takeaway: robustness is stress-family specific; patch-based context helps most u
 
 Table~\ref{tab:stress-alibaba} evaluates the same models after deployment stress is injected into the input window. Among native stress-suite models, PatchTST-lite has the best mean stress MSE and worst-case MSE, suggesting that patch-based context modeling can improve robustness under corrupted telemetry. DLinear remains much faster but loses robustness under severe stress. RACE-DLinear slightly improves over DLinear in mean and worst stress MSE, but the margin is not large enough to support a new-model claim.
 
-Official PatchTST, native iTransformer, and official TimeMixer are evaluated on the same Alibaba native stress suite for core deployment stresses. They are competitive on several clean or mild-corruption scenarios but remain heavier than the native lightweight baselines, and metric outage is still difficult. TimeMixer broadens the model pool through multiscale mixing, but the current native run does not remove the need for channel-outage-specific robustness: losing an entire telemetry stream remains different from modeling multi-scale trends. We also include a bounded Chronos-Bolt zero-shot feasibility reference. It is not a core ranking result or a complete foundation-model comparison; the Applied takeaway is that one pretrained reference does not remove the need for deployment-aware model selection.
+Official PatchTST, native iTransformer, and official TimeMixer are evaluated on the same Alibaba native stress suite for core deployment stresses. They are competitive on several clean or mild-corruption scenarios but remain heavier than the native lightweight baselines, and metric outage is still difficult. TimeMixer broadens the model pool through multiscale mixing, but the current native run does not remove the need for channel-outage-specific robustness: losing an entire telemetry stream remains different from modeling multi-scale trends. We also include a bounded Chronos-Bolt zero-shot feasibility reference, reported as additional foundation-model context over a subset of windows. The Applied takeaway is that one pretrained reference does not remove the need for deployment-aware model selection.
 
 \input{tables/stress_alibaba}
 
@@ -181,13 +188,13 @@ The same stress-family pattern appears beyond the Alibaba detail table. On metri
 
 Takeaway: common imputation pipelines can reduce point-missing damage, but they do not eliminate deployment-stress evaluation because channel outage and stale context still change the model choice.
 
-Real monitoring pipelines often apply simple repair before forecasting. We therefore add DLinear and PatchTST-lite with forward-fill and mean-fill preprocessing after stress injection. The ground truth remains clean. These rows are pipeline baselines, not new forecasting architectures; the full generated imputation table is retained in the artifact.
+Real monitoring pipelines often apply simple repair before forecasting. We therefore add DLinear and PatchTST-lite with forward-fill and mean-fill preprocessing after stress injection. The ground truth remains clean. These rows serve as pipeline baselines for deployment-stress analysis; the full generated imputation table is retained in the artifact.
 
 The pattern is consistent with deployment intuition. On point missingness, simple repair can help: Alibaba DLinear missing-30 capacity cost drops from 0.508 without repair to about 0.414--0.415 with mean or forward-fill. However, whole-channel outage is not solved by filling because the missing channel carries no contemporaneous information in the window; Alibaba DLinear missing-variable capacity cost remains 0.889 across no-fill, forward-fill, and mean-fill. Thus imputation is a useful pipeline baseline, but it does not remove the need to evaluate telemetry outage and stale-context stresses.
 
 \subsection{Claim 3a: Capacity Objectives Change Model Choice}
 
-Takeaway: the forecast-to-capacity decision proxy exposes consequences that are hidden by MSE/MAE alone, especially when under-provisioning and over-provisioning have asymmetric costs.
+Takeaway: the forecast-to-capacity open-loop decision proxy exposes consequences that are hidden by MSE/MAE alone, especially when under-provisioning and over-provisioning have asymmetric costs.
 
 Table~\ref{tab:deployment-cost} summarizes deployment cost on Alibaba. LastValue is a useful zero-parameter lower bound for latency, but among learned forecasters DLinear is the lowest-cost option. PatchTST-lite increases latency and memory for better stress accuracy, while Official PatchTST, native iTransformer, and official TimeMixer are heavier references. This cost table is important because AIOps-style workflows often contain both low-latency monitoring paths and slower offline planning paths.
 GPU memory is measured by the per-run profiler and rounded to MB; 1 MB-level TimeMixer differences across clean, stress, and aggregate rows reflect measurement aggregation variance rather than configuration changes.
@@ -204,7 +211,7 @@ Salesforce/Borg results reproduce the high-level lesson on a second multivariate
 
 \input{tables/capacity_simulator}
 
-Table~\ref{tab:capacity-simulator} provides the decision-proxy evaluation on the two multivariate telemetry sources. Reactive HPA is reported separately as a controller reference because it reacts after each realized step; in this short-horizon proxy without closed-loop scaling delay, cold starts, queueing, scheduler constraints, service dependencies, or service-level SLOs, such a reactive controller can have a low total normalized cost. This is a boundary condition of the proxy, not evidence that forecasting should replace reactive control. Among forecasting policies, Alibaba and Salesforce/Borg show different tradeoffs: DLinear is a low-latency planning baseline, while PatchTST-lite is more attractive on Salesforce/Borg and under metric-outage conditions. The decision proxy is therefore used to compare forecasting-model choices under a fixed asymmetric-cost protocol, not to rank forecasting against controllers.
+Table~\ref{tab:capacity-simulator} provides the decision-proxy evaluation on the two multivariate telemetry sources. Reactive HPA is reported separately as a controller reference because it reacts after each realized step; in this short-horizon proxy without closed-loop scaling delay, cold starts, queueing, scheduler constraints, service dependencies, or service-level SLOs, such a reactive controller can achieve low total normalized cost. Among forecasting policies, Alibaba and Salesforce/Borg show different tradeoffs: DLinear is a low-latency planning baseline, while PatchTST-lite is more attractive on Salesforce/Borg and under metric-outage conditions. The decision proxy is used to compare forecasting-model choices under a fixed asymmetric-cost protocol, while Reactive HPA helps separate controller-style reaction from proactive forecasting.
 
 These rows reinforce the same message as Table~\ref{tab:cross-source-winners}: the best clean forecaster, the best robust forecaster, and the best decision-proxy policy need not be the same learned model.
 
@@ -226,11 +233,7 @@ Fixed stress points are useful, but an offline deployment-stress benchmark shoul
 
 \begin{figure*}[t]
 \centering
-\IfFileExists{../outputs/paper_figures/figure_multisource_deployment_stress.pdf}{%
 \includegraphics[width=\linewidth]{figure_multisource_deployment_stress.pdf}%
-}{%
-\fbox{\parbox{0.92\linewidth}{Multi-source deployment-stress figure will be inserted after table and figure generation.}}%
-}
 \caption{Telemetry degradation changes model-selection tradeoffs across both multivariate sources. Panels show (a) Alibaba metric outage, (b) Salesforce/Borg metric outage, (c) decision cost versus latency, and (d) objective-winner disagreement counts over the same eight compact rows in Table~\ref{tab:cross-source-winners}. The figure supports within-protocol model-selection analysis under controlled offline stress.}
 \label{fig:multisource-stress}
 \end{figure*}
@@ -241,43 +244,46 @@ To reduce the chance that model ranking is an artifact of one random seed, we al
 
 \subsection{Baseline Scope}
 
-Takeaway: the lightweight robust baseline is useful for stress analysis, but the paper's contribution is the benchmark and deployment evidence chain, not a new forecasting architecture.
+Takeaway: the lightweight robust baseline is useful for stress analysis, while the main contribution is the benchmark and deployment evidence chain.
 
-The ablation explains why RACE-DLinear is not positioned as the main contribution. Removing stress augmentation causes a large degradation on GAIA missing-30, indicating that exposure to deployment-style corruption is more important than the extra model wrapper itself. Masking and calibration affect MAE and capacity cost, but the differences are not stable enough to justify a method-first paper.
+The ablation clarifies the role of RACE-DLinear in the benchmark. Removing stress augmentation causes a large degradation on GAIA missing-30, indicating that exposure to deployment-style corruption is more important than the extra model wrapper itself. Masking and calibration affect MAE and capacity cost, but these differences are better interpreted as benchmark evidence about stress-aware training than as a separate method contribution.
 
-This supports the final positioning of the work: the contribution is the controlled stress-to-decision evaluation pipeline and the resulting accuracy--robustness--latency analysis. RACE-DLinear is useful because it tests whether a low-cost robust variant can close part of the gap, but the paper should not claim a universal new forecasting architecture.
+This supports the final positioning of the work: the contribution is the controlled stress-to-decision evaluation pipeline and the resulting accuracy--robustness--latency analysis. RACE-DLinear is useful because it tests whether a low-cost robust variant can close part of the gap, while the central evidence remains the benchmark-driven model-selection analysis across stress, latency, and decision cost.
 
 \section{Case Studies}
 
-Case-study windows are illustrative and are not used to estimate aggregate performance. The selected cases cover four mechanisms that explain why the aggregate tables matter: NetMan telemetry outage removes the only observable KPI channel, Salesforce/Borg delayed telemetry turns forecasting into stale-context extrapolation, NetMan point missingness exposes an accuracy-latency tradeoff, and Alibaba metric outage stresses cross-metric context. In each case, the clean window hides the degradation mechanism; the aggregate conclusions still come from Tables~\ref{tab:cross-source-winners}--\ref{tab:capacity-sensitivity-compact} and Figure~\ref{fig:multisource-stress}.
+The case studies highlight representative failure mechanisms behind the aggregate results. The selected windows cover four patterns: NetMan telemetry outage removes the only observable KPI channel, Salesforce/Borg delayed telemetry turns forecasting into stale-context extrapolation, NetMan point missingness exposes an accuracy-latency tradeoff, and Alibaba metric outage stresses cross-metric context. In each case, the clean window hides the degradation mechanism, while Tables~\ref{tab:cross-source-winners}--\ref{tab:capacity-sensitivity-compact} and Figure~\ref{fig:multisource-stress} provide the aggregate evidence.
 
 \section{Threats to Validity}
 
-\noindent\textbf{Data realism.}
-Capacity-related conclusions in this paper are limited to resource-level operational telemetry and should not be extrapolated to service-level SLO behavior. Alibaba 2018 and Salesforce/Borg provide public multivariate operational telemetry, but neither should be over-claimed as a full service-level request/SLO trace. Alibaba is machine-level resource telemetry, and the current Salesforce/Borg subset contains one all-zero dynamic metric. GAIA and NetMan are useful for KPI stress diversity and failure analysis, but they should not be used to make strong resource-capacity claims. A stronger future extension should add a public service-level request, SLO, or autoscaling trace if one becomes reproducibly available.
+\noindent\textbf{Data scope and realism.}
+The resource-capacity evidence in AIOpsStressBench is grounded in public operational telemetry at machine or resource-proxy level. Alibaba 2018 provides machine-level resource traces, and the Salesforce/Borg public subset provides multivariate operational telemetry with one all-zero dynamic metric retained for schema transparency. GAIA and NetMan broaden KPI stress diversity and failure analysis, while Alibaba and Salesforce/Borg carry the main multivariate resource-telemetry evidence for latency, stress, and decision-proxy analysis. A stronger future extension would add reproducible public service-level request or SLO traces.
 
-\noindent\textbf{Forecast-to-capacity decision proxy.}
-The forecast-to-capacity evaluator is a reproducible decision proxy, not an autoscaling system. It captures under-provision area, over-provision area, peak misses, and headroom sensitivity, but it does not model queueing, scheduler constraints, cold starts, closed-loop scaling delay, service dependencies, or service-level SLOs. Reactive HPA results therefore cannot be extrapolated to real control conclusions. We use the proxy only for within-protocol comparisons of forecasting-policy consequences.
+\noindent\textbf{Decision-proxy assumptions.}
+The forecast-to-capacity evaluator is designed as a reproducible open-loop proxy for within-protocol comparison of forecasting-policy consequences. It captures under-provision area, over-provision area, peak misses, and headroom sensitivity under a fixed asymmetric-cost rule, while abstracting away queueing, scheduler constraints, cold starts, closed-loop scaling delay, service dependencies, and service-level SLOs. Reactive HPA therefore serves as a controller reference inside this proxy setting rather than as a full control-system conclusion.
 
-\noindent\textbf{Baseline fairness.}
-Official PatchTST, native iTransformer, and official TimeMixer are integrated into the native stress pipeline for Alibaba and Salesforce/Borg core scenarios. Chronos-Bolt is included only as a bounded zero-shot reference over a subset of windows and should not be read as a complete foundation-model comparison. TimesFM, Moirai, fine-tuned foundation-model variants, and probabilistic FM-specific evaluations are outside the current benchmark scope. Older LTSF CSV bridge runs are retained as reference-only analysis; the bridge flattens entity-metric channels and is not perfectly equivalent to the native per-entity target protocol, so it should not be used as the central ranking claim.
+\noindent\textbf{Baseline comparability.}
+Official PatchTST, native iTransformer, and official TimeMixer are integrated into the native stress pipeline for Alibaba and Salesforce/Borg core scenarios, while Chronos-Bolt is included as a bounded zero-shot reference over a subset of windows. Older LTSF CSV bridge runs remain reference-only because the bridge flattens entity-metric channels and is not fully equivalent to the native per-entity target protocol. The benchmark therefore separates lightweight repeated comparisons, official-wrapper coverage comparisons, and bounded reference runs rather than treating every backbone as the same experimental object.
 
-\noindent\textbf{Scope of model claims.}
-RACE-DLinear is a lightweight robust baseline, not the main contribution and not a claimed new architecture. The paper's contribution is the benchmark protocol, model-selection analysis, deployment-cost evaluation, and case-study evidence.
+\noindent\textbf{Claim scope.}
+RACE-DLinear is used as a lightweight robust baseline for stress analysis, while the central contribution of the paper is the benchmark protocol, model-selection analysis, deployment-cost evaluation, and case-study evidence. The current empirical scope focuses on reproducible stress-to-decision evidence over public operational telemetry rather than on exhaustive foundation-model coverage or a standalone method paper.
 
 \section{Reproducibility and Artifact}
 
-\noindent\textbf{Artifact:} \url{https://anonymous.4open.science/r/AIOpsStressBench-anon-artifact-4EE5/}. The repository contains data conversion scripts, NPZ manifests, stress operators, model wrappers, table-generation scripts, figure-generation scripts, and commands to reproduce Tables~IV--XII and Figure~2.
+\noindent\textbf{Artifact:}\\
+\url{https://anonymous.4open.science/r/AIOpsStressBench-anon-artifact-4EE5/}.
+The artifact contains data conversion scripts, released NPZ tensors and manifests, stress operators, model wrappers, and the scripts used to generate the main tables and figures.
 
-The anonymous artifact entry point is \texttt{ANON\_ARTIFACT.md}. It includes a benchmark manifest, data conversion scripts, experiment notes, table/figure-generation scripts, and LaTeX sources; repository identifiers are anonymized during review, and public-release metadata will be deanonymized after acceptance without changing the released experimental contents. Each main table is generated from \texttt{outputs/paper\_tables}, each main figure has a source artifact under \texttt{outputs/paper\_figures}, and the manifest records dataset roles, stress definitions, splits, metrics, and non-claims.
+The artifact entry point is \texttt{ANON\_ARTIFACT.md}, which documents the benchmark manifest, data-processing steps, experiment notes, and table/figure provenance. Repository identifiers are anonymized during review and will be deanonymized after acceptance without changing the released experimental contents.
 
-The minimal reproducible path uses the released public NPZ tensors, input length 96, prediction horizon 24, chronological 65/15/20 splits, and seed 42. Running the minimal path regenerates the core clean/stress winner table and the latency summary used in the main paper. Extended runs add severity curves, multi-seed checks, capacity sensitivity, official PatchTST, native iTransformer/TimeMixer, and the bounded Chronos-Bolt reference. We separate the artifact into a minimal reviewer-verification path and an extended evidence path so that the main claims are auditable without requiring reviewers to rerun the full experimental sweep.
+A minimal reviewer-verification path uses the public NPZ tensors, input length 96, prediction horizon 24, chronological 65/15/20 splits, and seed 42 to reproduce the core winner and latency results from the main paper. The artifact entry point documents the exact commands for the minimal and extended paths. Extended runs reproduce severity curves, multi-seed checks, capacity sensitivity, official-wrapper comparisons, and the bounded Chronos-Bolt reference. This separation keeps the main evidence chain auditable without requiring reviewers to rerun the full experimental sweep.
 
 \section{Conclusion}
 
-This paper introduced AIOpsStressBench, a reproducible offline stress-to-decision benchmark for operational time-series forecasting. The benchmark combines public telemetry, controlled telemetry-stress operators, latency and memory profiling, severity analysis, and a forecast-to-capacity decision proxy. Under this controlled protocol, clean-MSE selection can differ from the model selected under telemetry degradation, latency budgets, or asymmetric decision costs. This does not imply that clean forecasting benchmarks are uninformative; rather, it shows that they are incomplete for AIOps-style settings where telemetry health and deployment constraints are part of the model-selection problem. Robustness is also stress-family specific: patch-based context can help under metric outage, but this advantage is not universal across noise, delay, and latency-constrained settings. AIOpsStressBench is intended as a complementary evaluation layer for operational forecasting. It is not an autoscaling system, a complete foundation-model benchmark, or a new forecasting architecture claim. Future extensions should add public service-level traces and closed-loop control simulation.
+This paper introduced AIOpsStressBench, a reproducible offline stress-to-decision benchmark for operational time-series forecasting. The benchmark combines public telemetry, controlled telemetry-stress operators, latency and memory profiling, severity analysis, and a forecast-to-capacity open-loop decision proxy. Under this controlled protocol, clean-MSE selection can differ from the model selected under telemetry degradation, latency budgets, or asymmetric decision costs. This does not imply that clean forecasting benchmarks are uninformative; rather, it shows that they are incomplete for AIOps-style settings where telemetry health and deployment constraints are part of the model-selection problem. Robustness is also stress-family specific: patch-based context can help under metric outage, but this advantage is not universal across noise, delay, and latency-constrained settings. AIOpsStressBench provides a reproducible stress-to-decision evaluation layer for operational forecasting over public telemetry. Future extensions should add public service-level traces and closed-loop control simulation.
 
 \bibliographystyle{IEEEtran}
+\IEEEtriggeratref{15}
 \begin{thebibliography}{99}
 
 \bibitem{patchtst}
@@ -317,7 +323,7 @@ A. F. Ansari et al., ``Chronos: Learning the language of time series,'' \emph{Tr
 G. Woo, C. Liu, A. Kumar, C. Xiong, S. Savarese, and D. Sahoo, ``Unified training of universal time series forecasting transformers,'' in \emph{ICML}, 2024.
 
 \bibitem{timesfm}
-A. Das, W. Kong, R. Sen, and Y. Zhou, ``A decoder-only foundation model for time-series forecasting,'' arXiv:2310.10688, 2023.
+A. Das, W. Kong, R. Sen, and Y. Zhou, ``A decoder-only foundation model for time-series forecasting,'' in \emph{ICML}, 2024.
 
 \bibitem{fmenergy}
 L. Guibert, B. Pasquier, F. Montet, and B. Wolf, ``Benchmarking time series foundation models on their accuracy and energy consumption,'' in \emph{Proceedings of the Swiss AI Days}, PMLR 309, 2026.
@@ -329,13 +335,13 @@ G. Woo, C. Liu, A. Kumar, and D. Sahoo, ``Pushing the limits of pre-training for
 B. Cohen et al., ``This time is different: An observability perspective on time series foundation models,'' arXiv:2505.14766, 2025.
 
 \bibitem{autopilot}
-K. Rzadca et al., ``Autopilot: Workload autoscaling at Google,'' in \emph{EuroSys}, 2020.
+K. Rzadca et al., ``Autopilot: Workload autoscaling at Google scale,'' in \emph{EuroSys}, 2020.
 
 \bibitem{sinan}
 Y. Zhang, W. Hua, Z. Zhou, G. E. Suh, and C. Delimitrou, ``Sinan: ML-based and QoS-aware resource management for cloud microservices,'' in \emph{ASPLOS}, 2021.
 
 \bibitem{ahpa}
-Z. Zhou, C. Zhang, L. Ma, J. Gu, H. Qian, Q. Wen, L. Sun, P. Li, and Z. Tang, ``AHPA: Adaptive horizontal pod autoscaling systems on Alibaba Cloud Container Service for Kubernetes,'' in \emph{AAAI}, 2024.
+Z. Zhou, C. Zhang, L. Ma, J. Gu, H. Qian, Q. Wen, L. Sun, P. Li, and Z. Tang, ``AHPA: Adaptive horizontal pod autoscaling systems on Alibaba Cloud Container Service for Kubernetes,'' \emph{Proceedings of the AAAI Conference on Artificial Intelligence}, vol. 37, no. 13, pp. 15621--15629, 2023.
 
 \bibitem{gcm_missing}
 Google Cloud, ``Behavior of metric-based alerting policies: Missing data,'' Cloud Monitoring documentation.
